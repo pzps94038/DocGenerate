@@ -18,6 +18,17 @@ namespace DocGenerate.Helper
         }
 
         /// <summary>
+        /// 顯示文字資訊
+        /// </summary>
+        /// <param name="messageBoxTitle"></param>
+        /// <param name="messageBoxContent"></param>
+        /// <returns></returns>
+        public DialogResult ShowInfoMsg(string messageBoxTitle, string messageBoxContent)
+        {
+            return MessageBox.Show(messageBoxContent, messageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
         /// 跳出錯誤視窗
         /// </summary>
         /// <param name="ex"></param>
@@ -47,7 +58,6 @@ namespace DocGenerate.Helper
             string message = $"{messagePrefix}{GetFullExceptionString(ex, "錯誤：\r\n")}{messageSuffix}";
             _logHelper.Error(ex);
             return MessageBox.Show(message, messageBoxTitle, messageBoxButtons, messageBoxIcon);
-
         }
 
         /// <summary>

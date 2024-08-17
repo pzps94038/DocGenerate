@@ -53,7 +53,7 @@ namespace DocGenerate
             }
         }
 
-        public void FormLoad(object sender, EventArgs e)
+        private void ChooseDocGenerateForm_Load(object sender, EventArgs e)
         {
             try
             {

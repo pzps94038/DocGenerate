@@ -1,4 +1,5 @@
-﻿using DocGenerate.Helper;
+﻿using DocGenerate.Forms;
+using DocGenerate.Helper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -34,7 +35,8 @@ namespace DocGenerate
                     loggingBuilder.AddSerilog();
                 });
                 services.AddSingleton<ChooseDocGenerateForm>();
-                services.AddSingleton<DbDocGenerateForm>();
+                services.AddTransient<DbDocGenerateForm>();
+                services.AddTransient<AddDbSettingForm>();
                 services.AddSingleton<ISharedHelper, SharedHelper>();
                 services.AddSingleton<ILogHelper, LogHelper>();
                 _serviceProvider = services.BuildServiceProvider();

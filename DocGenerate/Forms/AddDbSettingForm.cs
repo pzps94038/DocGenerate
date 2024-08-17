@@ -8,19 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DocGenerate
+namespace DocGenerate.Forms
 {
-    public partial class DbDocGenerateForm : Form
+    public partial class AddDbSettingForm : Form
     {
-        public DbDocGenerateForm()
+        public AddDbSettingForm()
         {
             InitializeComponent();
-            this.Text = "資料庫文件產生";
         }
 
-        private void DbDocGenerateForm_Load(object sender, EventArgs e)
+        private void AddDbSettingForm_Load(object sender, EventArgs e)
         {
-
+            Text = "新增資料庫設定";
         }
     }
 }

@@ -65,7 +65,7 @@ namespace DocGenerate
             Controls.Add(DbDocGenerateBtn);
             Name = "ChooseDocGenerateForm";
             Text = "ChooseDocGenerateForm";
-            Load += FormLoad;
+            Load += ChooseDocGenerateForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -1,6 +1,6 @@
-﻿namespace DocGenerate
+﻿namespace DocGenerate.Forms
 {
-    partial class DbDocGenerateForm
+    partial class AddDbSettingForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,14 +30,14 @@
         {
             SuspendLayout();
             // 
-            // DbDocGenerateForm
+            // AddDbSettingForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Name = "DbDocGenerateForm";
-            Text = "DbDocGenerateForm";
-            Load += DbDocGenerateForm_Load;
+            Name = "AddDbSettingForm";
+            Text = "AddDbSettingForm";
+            Load += AddDbSettingForm_Load;
             ResumeLayout(false);
         }
 
