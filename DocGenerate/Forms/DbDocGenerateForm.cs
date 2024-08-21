@@ -1,4 +1,6 @@
-﻿using DocGenerate.Forms;
+﻿using DocGenerate.DatabaseContext;
+using DocGenerate.Forms;
+using DocGenerate.Helper;
 using DocGenerate.Model.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,93 +19,157 @@ namespace DocGenerate
     public partial class DbDocGenerateForm : Form
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly DocGenerateDbContext _docGenerateDbContext;
+        private readonly ISharedHelper _sharedHelper;
+        private List<DatabaseSetting> _settings = new List<DatabaseSetting>();
         public DbDocGenerateForm(
-            IServiceProvider serviceProvider
+            IServiceProvider serviceProvider,
+            DocGenerateDbContext docGenerateDbContext,
+            ISharedHelper sharedHelper
         )
         {
             _serviceProvider = serviceProvider;
+            _docGenerateDbContext = docGenerateDbContext;
+            _sharedHelper = sharedHelper;
             InitializeComponent();
-            Text = "資料庫文件產生";
         }
 
         private void InitListView()
         {
-            ListView.View = View.Details;
-            // 暫停更新
-            ListView.BeginUpdate();
-            ListView.ColumnClick += new ColumnClickEventHandler(ColumnClick!);
-            ListView.Columns.Add("日期");
-            ListView.Columns.Add("名稱");
-            ListView.Columns.Add("連線字串");
-            ListView.Columns.Add("產生路徑");
-            foreach (ColumnHeader column in ListView.Columns)
+            try
             {
-                column.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+                DataGridView.Columns.Add("DateColumn", "日期");
+                DataGridView.Columns.Add("NameColumn", "名稱");
+                DataGridView.Columns.Add("ConnectionStringColumn", "連線字串");
+                DataGridView.Columns.Add("PathColumn", "產生路徑");
+                for (int i = 0; i < 100; i++)
+                {
+                    DataGridView.Rows.Add("John" + i.ToString(), "S" + i.ToString(), "ConnectionString" + i.ToString(), "Path" + i.ToString());
+                }
             }
-            for (int i = 0; i < 100; i++)
+            catch (Exception ex)
             {
-                ListViewItem item = new("John" + i.ToString());
-                item.SubItems.Add("S" + i.ToString());
-                ListView.Items.Add(item);
+                _sharedHelper.ShowExceptionMessageBox(ex);
             }
-            ListView.EndUpdate();
         }
 
         private void InitOptions()
         {
-            SettingComboBox.DisplayMember = "Name";   // 显示的文本
-            SettingComboBox.ValueMember = "Value";    // 对应的值
-            var options = new List<SelectOption>();
-            options.Add(new SelectOption("請選擇", null));
-            SettingComboBox.DataSource = options;
-            SettingComboBox.SelectedIndex = 0;
-        }
-
-        private void ColumnClick(object sender, ColumnClickEventArgs args)
-        {
-
+            try
+            {
+                SettingComboBox.DisplayMember = "Name";
+                SettingComboBox.ValueMember = "Value";
+                var options = new List<SelectOption<Guid?>>();
+                options.Add(new SelectOption<Guid?> ("請選擇", null));
+                foreach (var setting in _settings)
+                {
+                    options.Add(new SelectOption<Guid?>(setting.Name, setting.UUID));
+                }
+                SettingComboBox.DataSource = options;
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
         }
 
         private void SettingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (SettingComboBox.SelectedValue == null)
+            try
             {
-                EditBtn.Enabled = false;
-                GenerateBtn.Enabled = false;
+                if (SettingComboBox.SelectedValue == null)
+                {
+                    EditBtn.Enabled = false;
+                    GenerateBtn.Enabled = false;
+                }
+                else
+                {
+                    EditBtn.Enabled = true;
+                    GenerateBtn.Enabled = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                EditBtn.Enabled = true;
-                GenerateBtn.Enabled = true;
+                _sharedHelper.ShowExceptionMessageBox(ex);
             }
         }
 
         private void EditBtn_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                var form = _serviceProvider.GetRequiredService<AddDbSettingForm>();
+                form.StartPosition = FormStartPosition.CenterScreen;
+                var data = _settings.FirstOrDefault(a => a.UUID == (Guid)SettingComboBox.SelectedValue!);
+                if (data != null)
+                {
+                    form.DatabaseSetting = data;
+                    form.FormClosed += EditFormClose;
+                    form.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
         }
 
-        private void DbType_Click(object sender, EventArgs e)
+        private void EditFormClose(object? sender, FormClosedEventArgs e)
         {
-
+            try
+            {
+                var uuid = (Guid)SettingComboBox.SelectedValue!;
+                InitSetting();
+                SettingComboBox.SelectedValue = uuid;
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
         }
+
 
         private void AddBtn_Click(object sender, EventArgs e)
         {
-            var form = _serviceProvider.GetRequiredService<AddDbSettingForm>();
-            form.StartPosition = FormStartPosition.CenterScreen;
-            form.ShowDialog();
-        }
-
-        private void ListView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
+            try
+            {
+                var form = _serviceProvider.GetRequiredService<AddDbSettingForm>();
+                form.StartPosition = FormStartPosition.CenterScreen;
+                form.FormClosed += EditFormClose;
+                form.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
         }
 
         private void DbDocGenerateForm_Load(object sender, EventArgs e)
         {
-            InitListView();
-            InitOptions();
+            try
+            {
+                Text = "資料庫文件產生";
+                InitSetting();
+                SettingComboBox.SelectedIndex = 0;
+                InitListView();
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
+        }
+
+        private void InitSetting()
+        {
+            try
+            {
+                _settings = _docGenerateDbContext.DatabaseSetting.ToList();
+                InitOptions();
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
         }
     }
 }

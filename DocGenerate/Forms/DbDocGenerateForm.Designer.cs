@@ -31,7 +31,6 @@
             AddBtn = new Button();
             SettingComboBox = new ComboBox();
             EditBtn = new Button();
-            ListView = new ListView();
             GenerateBtn = new Button();
             DbConnectionTextBox = new TextBox();
             SettingNameLabel = new Label();
@@ -39,7 +38,9 @@
             DbTypeTextBox = new TextBox();
             DbType = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
+            DataGridView = new DataGridView();
             tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)DataGridView).BeginInit();
             SuspendLayout();
             // 
             // AddBtn
@@ -55,6 +56,7 @@
             // 
             // SettingComboBox
             // 
+            SettingComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             SettingComboBox.FormattingEnabled = true;
             SettingComboBox.Location = new Point(110, 123);
             SettingComboBox.Name = "SettingComboBox";
@@ -73,15 +75,6 @@
             EditBtn.TabIndex = 2;
             EditBtn.UseVisualStyleBackColor = true;
             EditBtn.Click += EditBtn_Click;
-            // 
-            // ListView
-            // 
-            ListView.Location = new Point(15, 184);
-            ListView.Name = "ListView";
-            ListView.Size = new Size(826, 339);
-            ListView.TabIndex = 3;
-            ListView.UseCompatibleStateImageBehavior = false;
-            ListView.SelectedIndexChanged += ListView_SelectedIndexChanged;
             // 
             // GenerateBtn
             // 
@@ -139,7 +132,6 @@
             DbType.Size = new Size(89, 20);
             DbType.TabIndex = 9;
             DbType.Text = "資料庫類型";
-            DbType.Click += DbType_Click;
             // 
             // tableLayoutPanel1
             // 
@@ -166,19 +158,30 @@
             tableLayoutPanel1.Size = new Size(638, 166);
             tableLayoutPanel1.TabIndex = 10;
             // 
+            // DataGridView
+            // 
+            DataGridView.AllowUserToOrderColumns = true;
+            DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            DataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            DataGridView.Location = new Point(15, 194);
+            DataGridView.Name = "DataGridView";
+            DataGridView.Size = new Size(826, 329);
+            DataGridView.TabIndex = 11;
+            // 
             // DbDocGenerateForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(858, 535);
+            Controls.Add(DataGridView);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(GenerateBtn);
-            Controls.Add(ListView);
             Name = "DbDocGenerateForm";
             Text = "DbDocGenerateForm";
             Load += DbDocGenerateForm_Load;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)DataGridView).EndInit();
             ResumeLayout(false);
         }
 
@@ -187,7 +190,6 @@
         private Button AddBtn;
         private ComboBox SettingComboBox;
         private Button EditBtn;
-        private ListView ListView;
         private Button GenerateBtn;
         private TextBox DbConnectionTextBox;
         private Label SettingNameLabel;
@@ -195,5 +197,6 @@
         private TextBox DbTypeTextBox;
         private Label DbType;
         private TableLayoutPanel tableLayoutPanel1;
+        private DataGridView DataGridView;
     }
 }

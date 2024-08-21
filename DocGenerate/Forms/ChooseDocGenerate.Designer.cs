@@ -37,6 +37,7 @@ namespace DocGenerate
             // 
             DbDocGenerateBtn.Anchor = AnchorStyles.None;
             DbDocGenerateBtn.AutoSize = true;
+            DbDocGenerateBtn.Font = new Font("Microsoft JhengHei UI", 12F);
             DbDocGenerateBtn.Location = new Point(149, 60);
             DbDocGenerateBtn.Name = "DbDocGenerateBtn";
             DbDocGenerateBtn.Size = new Size(259, 55);
@@ -48,6 +49,7 @@ namespace DocGenerate
             // APIDocGenerateBtn
             // 
             APIDocGenerateBtn.Anchor = AnchorStyles.None;
+            APIDocGenerateBtn.Font = new Font("Microsoft JhengHei UI", 12F);
             APIDocGenerateBtn.Location = new Point(149, 135);
             APIDocGenerateBtn.Name = "APIDocGenerateBtn";
             APIDocGenerateBtn.Size = new Size(259, 55);

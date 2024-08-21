@@ -1,8 +1,10 @@
-﻿using DocGenerate.Forms;
+﻿using DocGenerate.DatabaseContext;
+using DocGenerate.Forms;
 using DocGenerate.Helper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System;
 
 namespace DocGenerate
 {
@@ -39,7 +41,10 @@ namespace DocGenerate
                 services.AddTransient<AddDbSettingForm>();
                 services.AddSingleton<ISharedHelper, SharedHelper>();
                 services.AddSingleton<ILogHelper, LogHelper>();
+                services.AddDbContext<DocGenerateDbContext>();
                 _serviceProvider = services.BuildServiceProvider();
+                var db = _serviceProvider.GetRequiredService<DocGenerateDbContext>();
+                db.Database.EnsureCreated();
                 var form = _serviceProvider.GetRequiredService<ChooseDocGenerateForm>();
                 form.StartPosition = FormStartPosition.CenterScreen;
                 var logHelper = _serviceProvider.GetRequiredService<ILogHelper>();

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DocGenerate.Model.Shared
 {
-    public class SelectOption
+    public class SelectOption<T>
     {
         public string? Name { get; set; }
-        public string? Value { get; set; }
+        public T? Value { get; set; }
         public SelectOption() { }
-        public SelectOption(string? name, string? value)
+        public SelectOption(string? name, T? value)
         {
             Name = name;
             Value = value;
