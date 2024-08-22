@@ -183,6 +183,7 @@
             Controls.Add(DbConnectionStringTextBox);
             Controls.Add(DbConnectionStringLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "AddDbSettingForm";
             Text = "AddDbSettingForm";
             Load += AddDbSettingForm_Load;

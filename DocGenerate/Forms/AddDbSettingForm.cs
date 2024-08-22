@@ -17,6 +17,7 @@ namespace DocGenerate.Forms
     public partial class AddDbSettingForm : Form
     {
         public DatabaseSetting? DatabaseSetting;
+        public bool IsConfirm = false;
         private readonly DocGenerateDbContext _docGenerateDbContext;
         private List<DatabaseSetting> _settings = new List<DatabaseSetting>();
         public AddDbSettingForm(
@@ -79,6 +80,7 @@ namespace DocGenerate.Forms
                         data.UpdateDate = DateTime.Now;
                         _docGenerateDbContext.DatabaseSetting.Update(data);
                         _docGenerateDbContext.SaveChanges();
+                        IsConfirm = true;
                         Close();
                     }
                 }
@@ -93,6 +95,7 @@ namespace DocGenerate.Forms
                         CreateDate = DateTime.Now
                     });
                     _docGenerateDbContext.SaveChanges();
+                    IsConfirm = true;
                     Close();
                 }
             }

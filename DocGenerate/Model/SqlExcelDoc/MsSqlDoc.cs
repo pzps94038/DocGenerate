@@ -80,7 +80,7 @@ namespace DocGenerate.Model.SqlExcelDoc
         public override IEnumerable<TableSpecifications> GetTableSpecifications()
         {
             var sql = @"SELECT
-							t.TABLE_SCHEMA + '.' + t.TABLE_NAME AS TableName,
+							t.TABLE_NAME AS TableName,
 							c.COLUMN_NAME AS ColumnName,
 							c.DATA_TYPE AS DataType,
 							CASE 

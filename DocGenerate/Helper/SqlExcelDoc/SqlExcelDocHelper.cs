@@ -1,8 +1,10 @@
 ﻿using DocGenerate.Interface.SqlExcelDoc;
 using DocGenerate.Model.SqlExcelDoc;
+using Microsoft.Data.SqlClient;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
+using System.Text.RegularExpressions;
 
 namespace DocGenerate.Helper.SqlExcelDoc
 {
@@ -63,9 +65,13 @@ namespace DocGenerate.Helper.SqlExcelDoc
                 sw.Close();
                 sqlDoc.Dispose();
             }
-            catch (ArgumentException)
+            catch (SqlException ex) 
             {
-                throw new Exception("資料表名稱過長...超出限制31字符");
+                throw new Exception("資料庫連接異常", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("產生文件異常", ex);
             }
         }
 
@@ -98,7 +104,7 @@ namespace DocGenerate.Helper.SqlExcelDoc
                 var tableNameCell = row.CreateStyleCell(1, hyperlinkStyle);
                 var hyperlink = new XSSFHyperlink(HyperlinkType.Document)
                 {
-                    Address = $"'{item.TableName}'!A1"
+                    Address = $"'{ShortenTableName(item.TableName)}'!A1"
                 };
                 tableNameCell.SetCellValue((item.TableName as string) ?? "");
                 tableNameCell.Hyperlink = hyperlink;
@@ -133,7 +139,7 @@ namespace DocGenerate.Helper.SqlExcelDoc
             var group = tableSpecifications.GroupBy(a => a.TableName);
             foreach (var keyPair in group)
             {
-                var sheet = workbook.CreateSheet(keyPair.Key);
+                var sheet = workbook.CreateSheet(ShortenTableName(keyPair.Key));
                 var titleRow = sheet.CreateRow(0);
                 var titleCellStyle = new CellStyle();
                 titleCellStyle.IsBold = true;
@@ -179,7 +185,7 @@ namespace DocGenerate.Helper.SqlExcelDoc
                         referencedTableNameCell = row.CreateStyleCell(7, referencedTableNameCellStyle);
                         var hyperlink = new XSSFHyperlink(HyperlinkType.Document)
                         {
-                            Address = $"'{item.ReferencedTableName}'!A1"
+                            Address = $"'{ShortenTableName(item.ReferencedTableName)}'!A1"
                         };
                         referencedTableNameCell.Hyperlink = hyperlink;
                     }
@@ -260,6 +266,41 @@ namespace DocGenerate.Helper.SqlExcelDoc
             // 在工作表上設置自動篩選的範圍
             sheet.SetAutoFilter(filterRange);
             sheet.AutoSheetSize(3);
+        }
+
+        public static string ShortenTableName(string tableName)
+        {
+            // 直接處理表格名稱，無前綴
+            string shortenedName = tableName;
+
+            // 移除非字母和數字的字符
+            shortenedName = Regex.Replace(shortenedName, @"[^a-zA-Z0-9]", "");
+
+            // 使用首字母縮寫來縮短名稱
+            if (shortenedName.Length > 31)
+            {
+                shortenedName = GetAcronym(shortenedName);
+            }
+
+            // 確保名稱不超過31字符，必要時截斷
+            if (shortenedName.Length > 31)
+            {
+                shortenedName = shortenedName.Substring(0, 31);
+            }
+
+            return shortenedName;
+        }
+
+        private static string GetAcronym(string name)
+        {
+            // 取得每個單詞的首字母並組合
+            string[] words = Regex.Split(name, @"(?<!^)(?=[A-Z])");
+            string acronym = "";
+            foreach (var word in words)
+            {
+                acronym += word[0];
+            }
+            return acronym;
         }
     }
 }

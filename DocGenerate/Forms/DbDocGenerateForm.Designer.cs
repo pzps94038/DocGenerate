@@ -178,6 +178,7 @@
             Controls.Add(tableLayoutPanel1);
             Controls.Add(GenerateBtn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "DbDocGenerateForm";
             Text = "DbDocGenerateForm";
             Load += DbDocGenerateForm_Load;

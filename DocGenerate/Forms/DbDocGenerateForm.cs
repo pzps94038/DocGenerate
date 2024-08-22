@@ -139,9 +139,16 @@ namespace DocGenerate
         {
             try
             {
-                var uuid = (Guid)SettingComboBox.SelectedValue!;
-                InitSetting();
-                SettingComboBox.SelectedValue = uuid;
+                if (sender != null)
+                {
+                    var form = (AddDbSettingForm)sender;
+                    if (form.IsConfirm)
+                    {
+                        var uuid = (Guid)SettingComboBox.SelectedValue!;
+                        InitSetting();
+                        SettingComboBox.SelectedValue = uuid;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -153,8 +160,15 @@ namespace DocGenerate
         {
             try
             {
-                InitSetting();
-                SettingComboBox.SelectedIndex = 0;
+                if (sender != null)
+                {
+                    var form = (AddDbSettingForm)sender;
+                    if (form.IsConfirm)
+                    {
+                        InitSetting();
+                        SettingComboBox.SelectedIndex = 0;
+                    }
+                }
             }
             catch (Exception ex)
             {

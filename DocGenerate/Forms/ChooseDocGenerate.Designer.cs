@@ -66,6 +66,7 @@ namespace DocGenerate
             Controls.Add(APIDocGenerateBtn);
             Controls.Add(DbDocGenerateBtn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "ChooseDocGenerateForm";
             Text = "ChooseDocGenerateForm";
             Load += ChooseDocGenerateForm_Load;
