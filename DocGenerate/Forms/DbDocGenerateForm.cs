@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -42,13 +43,154 @@ namespace DocGenerate
         {
             try
             {
-                DataGridView.Columns.Add("DateColumn", "日期");
-                DataGridView.Columns.Add("NameColumn", "名稱");
-                DataGridView.Columns.Add("ConnectionStringColumn", "連線字串");
-                DataGridView.Columns.Add("PathColumn", "產生路徑");
-                for (int i = 0; i < 100; i++)
+                DataGridViewTextBoxColumn uuIdColumn = new DataGridViewTextBoxColumn
                 {
-                    DataGridView.Rows.Add("John" + i.ToString(), "S" + i.ToString(), "ConnectionString" + i.ToString(), "Path" + i.ToString());
+                    Name = "UUIDColumn",
+                    HeaderText = "UUID",
+                    Visible = false // 設置為隱藏
+                };
+                DataGridView.Columns.Add(uuIdColumn);
+                DataGridView.Columns.Add("NameColumn", "名稱");
+                DataGridView.Columns.Add("DataBaseTypeColumn", "資料庫類型");
+                DataGridView.Columns.Add("ConnectionStringColumn", "連線字串");
+                DataGridView.Columns.Add("CreateDate", "建立日期");
+                DataGridView.Columns.Add("UpdateDate", "更新日期");
+                DataGridView.Columns["NameColumn"].ReadOnly = true;
+                DataGridView.Columns["DataBaseTypeColumn"].ReadOnly = true;
+                DataGridView.Columns["ConnectionStringColumn"].ReadOnly = true;
+                DataGridView.Columns["CreateDate"].ReadOnly = true;
+                DataGridView.Columns["UpdateDate"].ReadOnly = true;
+                DataGridViewButtonColumn modifyBtnColumn = new DataGridViewButtonColumn
+                {
+                    Name = "ModifyBtn",
+                    HeaderText = "",
+                    Text = "修改",
+                    UseColumnTextForButtonValue = true,
+                };
+                DataGridView.Columns.Add(modifyBtnColumn);
+                DataGridViewButtonColumn deleteColumn = new DataGridViewButtonColumn
+                {
+                    Name = "DeleteBtn",
+                    HeaderText = "",
+                    Text = "刪除",
+                    UseColumnTextForButtonValue = true,
+                };
+                DataGridView.Columns.Add(deleteColumn);
+                UpdateDataGridView();
+                DataGridView.CellContentClick += DataGridView_CellContentClick;
+                SetColumnWidths(DataGridView);
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
+        }
+
+        private void SetColumnWidths(DataGridView dataGridView)
+        {
+            // 設定每一列的寬度百分比
+            int totalWidth = dataGridView.ClientSize.Width;
+            // 計算每列寬度
+            dataGridView.Columns["NameColumn"].Width = (int)(totalWidth * 0.15);
+            dataGridView.Columns["DataBaseTypeColumn"].Width = (int)(totalWidth * 0.15);
+            dataGridView.Columns["ConnectionStringColumn"].Width = (int)(totalWidth * 0.3);
+            dataGridView.Columns["CreateDate"].Width = (int)(totalWidth * 0.15);
+            dataGridView.Columns["UpdateDate"].Width = (int)(totalWidth * 0.15);
+            dataGridView.Columns["ModifyBtn"].Width = (int)(totalWidth * 0.05);
+            dataGridView.Columns["DeleteBtn"].Width = (int)(totalWidth * 0.05);
+        }
+
+        private void UpdateDataGridView()
+        {
+            try
+            {
+                // 清空所有行
+                DataGridView.Rows.Clear();
+
+                // 重新填充 DataGridView
+                foreach (var data in _settings)
+                {
+                    var dbType = (DatabaseType)data.DataBaseType;
+                    var type = "";
+                    switch (dbType)
+                    {
+                        case DatabaseType.MySQL:
+                            type = "MySQL";
+                            break;
+                        case DatabaseType.MicrosoftSQLServer:
+                            type = "Microsoft SQL Server";
+                            break;
+                    }
+                    var createDate = data.CreateDate.ToString("yyyy/MM/dd HH:mm:ss");
+                    var updateDate = data.UpdateDate.HasValue ? data.UpdateDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                    DataGridView.Rows.Add(data.UUID, data.Name, type, data.ConnectionString, createDate, updateDate);
+                }
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
+        }
+
+        private void DataGridView_CellContentClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                int rowIndex = e.RowIndex;
+                DataGridViewRow row = DataGridView.Rows[rowIndex];
+                Guid? uuid = (Guid?)row.Cells["UUIDColumn"].Value;
+                if (uuid == null)
+                {
+                    return;
+                }
+                var data = _settings.FirstOrDefault(a => a.UUID == uuid!);
+                if (data == null)
+                {
+                    return;
+                }
+                if (e.ColumnIndex == 6)
+                {
+                    // 修改
+                    var form = _serviceProvider.GetRequiredService<AddDbSettingForm>();
+                    form.StartPosition = FormStartPosition.CenterScreen;
+                    if (data != null)
+                    {
+                        form.DatabaseSetting = data;
+                        form.FormClosed += DataGridEditFormClose;
+                        form.ShowDialog();
+                    }
+                }
+                if (e.ColumnIndex == 7)
+                {
+                    // 刪除
+                    DialogResult dialogResult = MessageBox.Show("是否確定要移除設定?", "確定", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        _docGenerateDbContext.DatabaseSetting.Remove(data!);
+                        _docGenerateDbContext.SaveChanges();
+                        InitSetting();
+                        UpdateDataGridView();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
+        }
+
+        private void DataGridEditFormClose(object? sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                if (sender != null)
+                {
+                    var form = (AddDbSettingForm)sender;
+                    if (form.IsConfirm)
+                    {
+                        InitSetting();
+                        UpdateDataGridView();
+                    }
                 }
             }
             catch (Exception ex)
@@ -147,6 +289,7 @@ namespace DocGenerate
                         var uuid = (Guid)SettingComboBox.SelectedValue!;
                         InitSetting();
                         SettingComboBox.SelectedValue = uuid;
+                        UpdateDataGridView();
                     }
                 }
             }
@@ -167,6 +310,7 @@ namespace DocGenerate
                     {
                         InitSetting();
                         SettingComboBox.SelectedIndex = 0;
+                        UpdateDataGridView();
                     }
                 }
             }

@@ -60,7 +60,7 @@
             SettingComboBox.FormattingEnabled = true;
             SettingComboBox.Location = new Point(110, 123);
             SettingComboBox.Name = "SettingComboBox";
-            SettingComboBox.Size = new Size(484, 23);
+            SettingComboBox.Size = new Size(703, 23);
             SettingComboBox.TabIndex = 1;
             SettingComboBox.SelectedIndexChanged += SettingComboBox_SelectedIndexChanged;
             // 
@@ -69,7 +69,7 @@
             EditBtn.BackgroundImage = Properties.Resources.edit;
             EditBtn.BackgroundImageLayout = ImageLayout.Zoom;
             EditBtn.Enabled = false;
-            EditBtn.Location = new Point(600, 123);
+            EditBtn.Location = new Point(819, 123);
             EditBtn.Name = "EditBtn";
             EditBtn.Size = new Size(30, 25);
             EditBtn.TabIndex = 2;
@@ -78,9 +78,10 @@
             // 
             // GenerateBtn
             // 
+            GenerateBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             GenerateBtn.Enabled = false;
             GenerateBtn.Font = new Font("Microsoft JhengHei UI", 16F);
-            GenerateBtn.Location = new Point(666, 15);
+            GenerateBtn.Location = new Point(870, 12);
             GenerateBtn.Name = "GenerateBtn";
             GenerateBtn.Size = new Size(175, 163);
             GenerateBtn.TabIndex = 4;
@@ -93,7 +94,7 @@
             DbConnectionTextBox.Enabled = false;
             DbConnectionTextBox.Location = new Point(110, 87);
             DbConnectionTextBox.Name = "DbConnectionTextBox";
-            DbConnectionTextBox.Size = new Size(484, 23);
+            DbConnectionTextBox.Size = new Size(703, 23);
             DbConnectionTextBox.TabIndex = 5;
             // 
             // SettingNameLabel
@@ -121,7 +122,7 @@
             DbTypeTextBox.Enabled = false;
             DbTypeTextBox.Location = new Point(110, 49);
             DbTypeTextBox.Name = "DbTypeTextBox";
-            DbTypeTextBox.Size = new Size(484, 23);
+            DbTypeTextBox.Size = new Size(703, 23);
             DbTypeTextBox.TabIndex = 8;
             // 
             // DbType
@@ -139,8 +140,8 @@
             tableLayoutPanel1.Anchor = AnchorStyles.None;
             tableLayoutPanel1.ColumnCount = 3;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 107F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 92.27872F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 7.72128057F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 95.1677856F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 4.832215F));
             tableLayoutPanel1.Controls.Add(AddBtn, 0, 0);
             tableLayoutPanel1.Controls.Add(DbConnectionTextBox, 1, 2);
             tableLayoutPanel1.Controls.Add(DbTypeTextBox, 1, 1);
@@ -149,31 +150,33 @@
             tableLayoutPanel1.Controls.Add(SettingComboBox, 1, 3);
             tableLayoutPanel1.Controls.Add(SettingNameLabel, 0, 3);
             tableLayoutPanel1.Controls.Add(DbConnectionLabel, 0, 2);
-            tableLayoutPanel1.Location = new Point(15, 12);
+            tableLayoutPanel1.Location = new Point(12, 9);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 4;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(638, 166);
+            tableLayoutPanel1.Size = new Size(852, 166);
             tableLayoutPanel1.TabIndex = 10;
             // 
             // DataGridView
             // 
+            DataGridView.AllowUserToAddRows = false;
             DataGridView.AllowUserToOrderColumns = true;
             DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             DataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DataGridView.Location = new Point(15, 194);
+            DataGridView.Dock = DockStyle.Bottom;
+            DataGridView.Location = new Point(0, 181);
             DataGridView.Name = "DataGridView";
-            DataGridView.Size = new Size(826, 329);
+            DataGridView.Size = new Size(1045, 347);
             DataGridView.TabIndex = 11;
             // 
             // DbDocGenerateForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(858, 535);
+            ClientSize = new Size(1045, 528);
             Controls.Add(DataGridView);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(GenerateBtn);
