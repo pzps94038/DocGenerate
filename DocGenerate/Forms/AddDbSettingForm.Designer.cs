@@ -182,6 +182,7 @@
             Controls.Add(tableLayoutPanel1);
             Controls.Add(DbConnectionStringTextBox);
             Controls.Add(DbConnectionStringLabel);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "AddDbSettingForm";
             Text = "AddDbSettingForm";
             Load += AddDbSettingForm_Load;

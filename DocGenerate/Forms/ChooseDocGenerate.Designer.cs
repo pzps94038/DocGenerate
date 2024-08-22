@@ -65,6 +65,7 @@ namespace DocGenerate
             ClientSize = new Size(565, 256);
             Controls.Add(APIDocGenerateBtn);
             Controls.Add(DbDocGenerateBtn);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "ChooseDocGenerateForm";
             Text = "ChooseDocGenerateForm";
             Load += ChooseDocGenerateForm_Load;

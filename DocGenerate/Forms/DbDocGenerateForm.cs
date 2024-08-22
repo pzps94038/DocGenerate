@@ -208,32 +208,39 @@ namespace DocGenerate
 
         private void GenerateBtn_Click(object sender, EventArgs e)
         {
-            var uuid = (Guid)SettingComboBox.SelectedValue!;
-            var data = _settings.FirstOrDefault(a => a.UUID == (Guid)SettingComboBox.SelectedValue!);
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
+            try
             {
-                if (data != null)
+                var uuid = (Guid)SettingComboBox.SelectedValue!;
+                var data = _settings.FirstOrDefault(a => a.UUID == (Guid)SettingComboBox.SelectedValue!);
+                FolderBrowserDialog dialog = new FolderBrowserDialog();
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    var fileName = data.Name + ".xlsx";
-                    var fullPath = Path.Combine(dialog.SelectedPath, fileName);
-                    var dbType = (DatabaseType)data.DataBaseType;
-                    var type = "";
-                    switch (dbType)
+                    if (data != null)
                     {
-                        case DatabaseType.MySQL:
-                            type = "MYSQL";
-                            break;
-                        case DatabaseType.MicrosoftSQLServer:
-                            type = "MSSQL";
-                            break;
+                        var fileName = data.Name + ".xlsx";
+                        var fullPath = Path.Combine(dialog.SelectedPath, fileName);
+                        var dbType = (DatabaseType)data.DataBaseType;
+                        var type = "";
+                        switch (dbType)
+                        {
+                            case DatabaseType.MySQL:
+                                type = "MYSQL";
+                                break;
+                            case DatabaseType.MicrosoftSQLServer:
+                                type = "MSSQL";
+                                break;
+                        }
+                        Cursor.Current = Cursors.WaitCursor;
+                        var task = Task.Run(() => _sqlExcelDocHelper.CreateDocumentation(data.ConnectionString, fullPath, type));
+                        Task.WaitAll(task);
+                        _sharedHelper.ShowInfoMsg("文件產生完成", @$"文件已產生到{fullPath}路徑!");
+                        Cursor.Current = Cursors.Default;
                     }
-                    Cursor.Current = Cursors.WaitCursor;
-                    var task = Task.Run(() => _sqlExcelDocHelper.CreateDocumentation(data.ConnectionString, fullPath, type));
-                    Task.WaitAll(task);
-                    _sharedHelper.ShowInfoMsg("文件產生完成", @$"文件已產生到{fullPath}路徑!");
-                    Cursor.Current = Cursors.Default;
                 }
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
             }
         }
     }

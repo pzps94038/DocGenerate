@@ -177,6 +177,7 @@
             Controls.Add(DataGridView);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(GenerateBtn);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "DbDocGenerateForm";
             Text = "DbDocGenerateForm";
             Load += DbDocGenerateForm_Load;
