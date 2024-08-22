@@ -1,6 +1,8 @@
 ﻿using DocGenerate.DatabaseContext;
 using DocGenerate.Forms;
 using DocGenerate.Helper;
+using DocGenerate.Helper.SqlExcelDoc;
+using DocGenerate.Interface.SqlExcelDoc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -41,6 +43,7 @@ namespace DocGenerate
                 services.AddTransient<AddDbSettingForm>();
                 services.AddSingleton<ISharedHelper, SharedHelper>();
                 services.AddSingleton<ILogHelper, LogHelper>();
+                services.AddSingleton<ISqlExcelDocHelper, SqlExcelDocHelper>();
                 services.AddDbContext<DocGenerateDbContext>();
                 _serviceProvider = services.BuildServiceProvider();
                 var db = _serviceProvider.GetRequiredService<DocGenerateDbContext>();

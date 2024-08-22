@@ -1,6 +1,7 @@
 ﻿using DocGenerate.DatabaseContext;
 using DocGenerate.Forms;
 using DocGenerate.Helper;
+using DocGenerate.Interface.SqlExcelDoc;
 using DocGenerate.Model.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,16 +22,19 @@ namespace DocGenerate
         private readonly IServiceProvider _serviceProvider;
         private readonly DocGenerateDbContext _docGenerateDbContext;
         private readonly ISharedHelper _sharedHelper;
+        private readonly ISqlExcelDocHelper _sqlExcelDocHelper;
         private List<DatabaseSetting> _settings = new List<DatabaseSetting>();
         public DbDocGenerateForm(
             IServiceProvider serviceProvider,
             DocGenerateDbContext docGenerateDbContext,
-            ISharedHelper sharedHelper
+            ISharedHelper sharedHelper,
+            ISqlExcelDocHelper sqlExcelDocHelper
         )
         {
             _serviceProvider = serviceProvider;
             _docGenerateDbContext = docGenerateDbContext;
             _sharedHelper = sharedHelper;
+            _sqlExcelDocHelper = sqlExcelDocHelper;
             InitializeComponent();
         }
 
@@ -60,7 +64,7 @@ namespace DocGenerate
                 SettingComboBox.DisplayMember = "Name";
                 SettingComboBox.ValueMember = "Value";
                 var options = new List<SelectOption<Guid?>>();
-                options.Add(new SelectOption<Guid?> ("請選擇", null));
+                options.Add(new SelectOption<Guid?>("請選擇", null));
                 foreach (var setting in _settings)
                 {
                     options.Add(new SelectOption<Guid?>(setting.Name, setting.UUID));
@@ -84,8 +88,25 @@ namespace DocGenerate
                 }
                 else
                 {
-                    EditBtn.Enabled = true;
-                    GenerateBtn.Enabled = true;
+                    var data = _settings.FirstOrDefault(a => a.UUID == (Guid)SettingComboBox.SelectedValue!);
+                    if (data != null)
+                    {
+                        EditBtn.Enabled = true;
+                        GenerateBtn.Enabled = true;
+                        var dbType = (DatabaseType)data.DataBaseType;
+                        var type = "";
+                        switch (dbType)
+                        {
+                            case DatabaseType.MySQL:
+                                type = "MySQL";
+                                break;
+                            case DatabaseType.MicrosoftSQLServer:
+                                type = "Microsoft SQL Server";
+                                break;
+                        }
+                        DbTypeTextBox.Text = type;
+                        DbConnectionTextBox.Text = data.ConnectionString;
+                    }
                 }
             }
             catch (Exception ex)
@@ -128,6 +149,19 @@ namespace DocGenerate
             }
         }
 
+        private void AddFormClose(object? sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                InitSetting();
+                SettingComboBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                _sharedHelper.ShowExceptionMessageBox(ex);
+            }
+        }
+
 
         private void AddBtn_Click(object sender, EventArgs e)
         {
@@ -135,7 +169,7 @@ namespace DocGenerate
             {
                 var form = _serviceProvider.GetRequiredService<AddDbSettingForm>();
                 form.StartPosition = FormStartPosition.CenterScreen;
-                form.FormClosed += EditFormClose;
+                form.FormClosed += AddFormClose;
                 form.ShowDialog();
             }
             catch (Exception ex)
@@ -169,6 +203,37 @@ namespace DocGenerate
             catch (Exception ex)
             {
                 _sharedHelper.ShowExceptionMessageBox(ex);
+            }
+        }
+
+        private void GenerateBtn_Click(object sender, EventArgs e)
+        {
+            var uuid = (Guid)SettingComboBox.SelectedValue!;
+            var data = _settings.FirstOrDefault(a => a.UUID == (Guid)SettingComboBox.SelectedValue!);
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                if (data != null)
+                {
+                    var fileName = data.Name + ".xlsx";
+                    var fullPath = Path.Combine(dialog.SelectedPath, fileName);
+                    var dbType = (DatabaseType)data.DataBaseType;
+                    var type = "";
+                    switch (dbType)
+                    {
+                        case DatabaseType.MySQL:
+                            type = "MYSQL";
+                            break;
+                        case DatabaseType.MicrosoftSQLServer:
+                            type = "MSSQL";
+                            break;
+                    }
+                    Cursor.Current = Cursors.WaitCursor;
+                    var task = Task.Run(() => _sqlExcelDocHelper.CreateDocumentation(data.ConnectionString, fullPath, type));
+                    Task.WaitAll(task);
+                    _sharedHelper.ShowInfoMsg("文件產生完成", @$"文件已產生到{fullPath}路徑!");
+                    Cursor.Current = Cursors.Default;
+                }
             }
         }
     }

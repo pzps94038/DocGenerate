@@ -86,6 +86,7 @@
             GenerateBtn.TabIndex = 4;
             GenerateBtn.Text = "產生";
             GenerateBtn.UseVisualStyleBackColor = true;
+            GenerateBtn.Click += GenerateBtn_Click;
             // 
             // DbConnectionTextBox
             // 
