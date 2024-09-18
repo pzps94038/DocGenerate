@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+        }
+
+        rapi-pdf {
+            display: none;
+        }
+
+        .btn-default {
+            font-size: 16px;
+            padding: 24px;
+            text-align: center;
+            white-space: nowrap;
+            background-color: #3b6fdd;
+            color: white;
+            border: 0px solid #333;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+    <script type="text/javascript" src="./rapipdf-min.js"></script>
+</head>
+<body>
+    <rapi-pdf id="thedoc">
+    </rapi-pdf>
+    <div class="container">
+        <button id="btn" class="btn-default" type="button">選取Swagger.json檔案 產生文件</button>
+    </div>
+    <script>
+        const btnEl = document.getElementById("btn");
+        const docEl = document.getElementById("thedoc");
+        const localizeObj = {
+            index: '目錄索引',
+            api: 'API',
+            apiList: 'API List',
+            apiReference: 'API Reference',
+            apiVersion: 'API Version',
+            contact: 'CONTACT',
+            name: '欄位名稱',
+            email: 'EMAIL',
+            url: 'URL',
+            termsOfService: 'Terms of service',
+            securityAndAuthentication: 'HTTP Header: Authentication',
+            securitySchemes: 'SECURITY SCHEMES',
+            key: '認證方式',
+            type: '型別',
+            example: 'EXAMPLE',
+            description: '說明',
+            request: 'REQUEST',
+            requestBody: 'REQUEST BODY',
+            response: 'RESPONSE',
+            responseModel: 'RESPONSE MODEL',
+            statusCode: 'STATUS CODE',
+            deprecated: 'DEPRECATED',
+            allowed: 'ALLOWED',
+            default: '預設值',
+            readOnly: 'READ ONLY',
+            writeOnly: 'WRITE ONLY',
+            enumValues: 'ENUM',
+            pattern: 'PATTERN',
+            parameters: 'Parameters',
+            noRequestParameters: 'No request parameters',
+            method: 'METHOD'
+        }
+        docEl.localize = {
+            ...docEl.localize,
+            ...localizeObj
+        };
+        async function chooseFile() {
+            var host = window.chrome.webview.hostObjects.webViewClass;
+            return await host.ChooseFile("", "JSON Files (*.json)|*.json", "瀏覽JSON檔案");
+        }
+        async function readFile(filePath) {
+            var host = window.chrome.webview.hostObjects.webViewClass;
+            return await host.ReadFile(filePath);
+        }
+        btnEl.addEventListener('click', async (ev) => {
+            var filePath = await chooseFile();
+            if (!!filePath) {
+                var result = await readFile(filePath);
+                const objSpec = JSON.parse(result);
+                docEl.generatePdf(objSpec);
+            }
+        })
+
+    </script>
+</body>
+</html>

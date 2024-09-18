@@ -22,6 +22,11 @@ namespace DocGenerate
             _sharedHelper = sharedHelper;
         }
 
+        private void ChooseDocGenerateForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
         /// <summary>
         /// 資料庫文件產生
         /// </summary>
@@ -37,11 +42,9 @@ namespace DocGenerate
 
         public void APIDocGenerateBtnClick(object sender, System.EventArgs e)
         {
-        }
-
-        private void ChooseDocGenerateForm_Load(object sender, EventArgs e)
-        {
-
+            var form = _serviceProvider.GetRequiredService<APIDocForm>();
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.Show();
         }
 
         private void SelfSignedCertificateBtn_Click(object sender, EventArgs e)

@@ -1,7 +1,9 @@
 ﻿using DocGenerate.DatabaseContext;
 using DocGenerate.Forms;
 using DocGenerate.Helper;
+using DocGenerate.Helper.APIDoc;
 using DocGenerate.Helper.SqlExcelDoc;
+using DocGenerate.Interface.APIDoc;
 using DocGenerate.Interface.SqlExcelDoc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,6 +46,8 @@ namespace DocGenerate
                 services.AddTransient<DbDocGenerateForm>();
                 services.AddTransient<AddDbSettingForm>();
                 services.AddTransient<SelfSignedCertificateForm>();
+                services.AddTransient<APIDocForm>();
+                services.AddSingleton<IWebViewHelper, WebViewHelper>();
                 services.AddSingleton<ISharedHelper, SharedHelper>();
                 services.AddSingleton<ILogHelper, LogHelper>();
                 services.AddSingleton<ISqlExcelDocHelper, SqlExcelDocHelper>();

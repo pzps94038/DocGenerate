@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="Asset\APIDoc\rapipdf-min.js" />
 		<None Remove="C:\Users\pzps9\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
 	</ItemGroup>
 
@@ -45,6 +46,12 @@
 
 	<ItemGroup>
 		<Content Include="Asset\Openssl\**\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Asset\APIDoc\index.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Asset\APIDoc\rapipdf-min.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
