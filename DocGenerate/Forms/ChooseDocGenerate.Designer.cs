@@ -31,6 +31,7 @@ namespace DocGenerate
         {
             DbDocGenerateBtn = new Button();
             APIDocGenerateBtn = new Button();
+            SelfSignedCertificateBtn = new Button();
             SuspendLayout();
             // 
             // DbDocGenerateBtn
@@ -38,7 +39,7 @@ namespace DocGenerate
             DbDocGenerateBtn.Anchor = AnchorStyles.None;
             DbDocGenerateBtn.AutoSize = true;
             DbDocGenerateBtn.Font = new Font("Microsoft JhengHei UI", 12F);
-            DbDocGenerateBtn.Location = new Point(149, 60);
+            DbDocGenerateBtn.Location = new Point(152, 27);
             DbDocGenerateBtn.Name = "DbDocGenerateBtn";
             DbDocGenerateBtn.Size = new Size(259, 55);
             DbDocGenerateBtn.TabIndex = 0;
@@ -50,7 +51,7 @@ namespace DocGenerate
             // 
             APIDocGenerateBtn.Anchor = AnchorStyles.None;
             APIDocGenerateBtn.Font = new Font("Microsoft JhengHei UI", 12F);
-            APIDocGenerateBtn.Location = new Point(149, 135);
+            APIDocGenerateBtn.Location = new Point(152, 100);
             APIDocGenerateBtn.Name = "APIDocGenerateBtn";
             APIDocGenerateBtn.Size = new Size(259, 55);
             APIDocGenerateBtn.TabIndex = 1;
@@ -58,11 +59,23 @@ namespace DocGenerate
             APIDocGenerateBtn.UseVisualStyleBackColor = true;
             APIDocGenerateBtn.Click += APIDocGenerateBtnClick;
             // 
+            // SelfSignedCertificateBtn
+            // 
+            SelfSignedCertificateBtn.Font = new Font("Microsoft JhengHei UI", 12F);
+            SelfSignedCertificateBtn.Location = new Point(152, 172);
+            SelfSignedCertificateBtn.Name = "SelfSignedCertificateBtn";
+            SelfSignedCertificateBtn.Size = new Size(259, 55);
+            SelfSignedCertificateBtn.TabIndex = 2;
+            SelfSignedCertificateBtn.Text = "自簽憑證產生";
+            SelfSignedCertificateBtn.UseVisualStyleBackColor = true;
+            SelfSignedCertificateBtn.Click += SelfSignedCertificateBtn_Click;
+            // 
             // ChooseDocGenerateForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(565, 256);
+            Controls.Add(SelfSignedCertificateBtn);
             Controls.Add(APIDocGenerateBtn);
             Controls.Add(DbDocGenerateBtn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -78,5 +91,6 @@ namespace DocGenerate
 
         private Button DbDocGenerateBtn;
         private Button APIDocGenerateBtn;
+        private Button SelfSignedCertificateBtn;
     }
 }

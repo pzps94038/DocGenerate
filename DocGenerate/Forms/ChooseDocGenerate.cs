@@ -1,3 +1,4 @@
+using DocGenerate.Forms;
 using DocGenerate.Helper;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Forms;
@@ -28,41 +29,26 @@ namespace DocGenerate
         /// <param name="e"></param>
         public void DbDocGenerateBtnClick(object sender, EventArgs e)
         {
-            try
-            {
-                var form = _serviceProvider.GetRequiredService<DbDocGenerateForm>();
-                form.StartPosition = FormStartPosition.CenterScreen;
-                form.Show();
-            }
-            catch (Exception ex)
-            {
-                _sharedHelper.ShowExceptionMessageBox(ex);
-            }
+            var form = _serviceProvider.GetRequiredService<DbDocGenerateForm>();
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.Show();
         }
 
 
         public void APIDocGenerateBtnClick(object sender, System.EventArgs e)
         {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                _sharedHelper.ShowExceptionMessageBox(ex);
-            }
         }
 
         private void ChooseDocGenerateForm_Load(object sender, EventArgs e)
         {
-            try
-            {
 
-            }
-            catch (Exception ex)
-            {
-                _sharedHelper.ShowExceptionMessageBox(ex);
-            }
+        }
+
+        private void SelfSignedCertificateBtn_Click(object sender, EventArgs e)
+        {
+            var form = _serviceProvider.GetRequiredService<SelfSignedCertificateForm>();
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.Show();
         }
     }
 }

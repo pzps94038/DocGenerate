@@ -22,6 +22,8 @@ namespace DocGenerate
             try
             {
                 Application.ApplicationExit += new EventHandler(OnApplicationExit!);
+                Application.ThreadException += Application_ThreadException;
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                 Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
@@ -41,6 +43,7 @@ namespace DocGenerate
                 services.AddSingleton<ChooseDocGenerateForm>();
                 services.AddTransient<DbDocGenerateForm>();
                 services.AddTransient<AddDbSettingForm>();
+                services.AddTransient<SelfSignedCertificateForm>();
                 services.AddSingleton<ISharedHelper, SharedHelper>();
                 services.AddSingleton<ILogHelper, LogHelper>();
                 services.AddSingleton<ISqlExcelDocHelper, SqlExcelDocHelper>();
@@ -68,6 +71,33 @@ namespace DocGenerate
         {
             var logHelper = _serviceProvider?.GetRequiredService<ILogHelper>();
             logHelper?.Info("Program End.");
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            try
+            {
+                var sharedHelper = _serviceProvider?.GetRequiredService<ISharedHelper>();
+                sharedHelper?.ShowExceptionMessageBox(e.Exception);
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                var sharedHelper = _serviceProvider?.GetRequiredService<ISharedHelper>();
+                var ex = (Exception)e.ExceptionObject;
+                sharedHelper?.ShowExceptionMessageBox(ex);
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }
