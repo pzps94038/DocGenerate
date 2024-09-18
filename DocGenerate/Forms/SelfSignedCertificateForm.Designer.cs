@@ -52,6 +52,12 @@
             EmailErrorProvider = new ErrorProvider(components);
             CommonNameErrorProvider = new ErrorProvider(components);
             label1 = new Label();
+            DNSTextBox = new TextBox();
+            DNSLabel = new Label();
+            IPTextBox = new TextBox();
+            IPLabel = new Label();
+            DNSErrorProvider = new ErrorProvider(components);
+            IPErrorProvider = new ErrorProvider(components);
             ((System.ComponentModel.ISupportInitialize)CountryErrorProvider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ProvinceErrorProvider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CityErrorProvider).BeginInit();
@@ -59,13 +65,15 @@
             ((System.ComponentModel.ISupportInitialize)OrganizationalUnitErrorProvider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EmailErrorProvider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CommonNameErrorProvider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DNSErrorProvider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)IPErrorProvider).BeginInit();
             SuspendLayout();
             // 
             // CountryTextBox
             // 
             CountryTextBox.Location = new Point(22, 27);
             CountryTextBox.Name = "CountryTextBox";
-            CountryTextBox.Size = new Size(438, 23);
+            CountryTextBox.Size = new Size(763, 23);
             CountryTextBox.TabIndex = 0;
             CountryTextBox.Text = "TW";
             // 
@@ -91,7 +99,7 @@
             // 
             ProvinceTextBox.Location = new Point(22, 71);
             ProvinceTextBox.Name = "ProvinceTextBox";
-            ProvinceTextBox.Size = new Size(438, 23);
+            ProvinceTextBox.Size = new Size(763, 23);
             ProvinceTextBox.TabIndex = 3;
             ProvinceTextBox.Text = "Taiwan";
             // 
@@ -99,7 +107,7 @@
             // 
             CityTextBox.Location = new Point(22, 115);
             CityTextBox.Name = "CityTextBox";
-            CityTextBox.Size = new Size(438, 23);
+            CityTextBox.Size = new Size(763, 23);
             CityTextBox.TabIndex = 5;
             CityTextBox.Text = "Taipei";
             // 
@@ -116,7 +124,7 @@
             // 
             OrganizationNameTextBox.Location = new Point(22, 159);
             OrganizationNameTextBox.Name = "OrganizationNameTextBox";
-            OrganizationNameTextBox.Size = new Size(438, 23);
+            OrganizationNameTextBox.Size = new Size(763, 23);
             OrganizationNameTextBox.TabIndex = 7;
             OrganizationNameTextBox.Text = "組織名稱";
             // 
@@ -133,7 +141,7 @@
             // 
             OrganizationalUnitTextBox.Location = new Point(22, 204);
             OrganizationalUnitTextBox.Name = "OrganizationalUnitTextBox";
-            OrganizationalUnitTextBox.Size = new Size(438, 23);
+            OrganizationalUnitTextBox.Size = new Size(763, 23);
             OrganizationalUnitTextBox.TabIndex = 9;
             OrganizationalUnitTextBox.Text = "IT Department";
             // 
@@ -150,7 +158,7 @@
             // 
             EmailTextBox.Location = new Point(22, 247);
             EmailTextBox.Name = "EmailTextBox";
-            EmailTextBox.Size = new Size(438, 23);
+            EmailTextBox.Size = new Size(763, 23);
             EmailTextBox.TabIndex = 11;
             EmailTextBox.Text = "admin@example.com";
             // 
@@ -167,7 +175,7 @@
             // 
             CommonNameTextBox.Location = new Point(22, 291);
             CommonNameTextBox.Name = "CommonNameTextBox";
-            CommonNameTextBox.Size = new Size(438, 23);
+            CommonNameTextBox.Size = new Size(763, 23);
             CommonNameTextBox.TabIndex = 13;
             CommonNameTextBox.Text = "通用名稱";
             // 
@@ -183,9 +191,9 @@
             // GenerateBtn
             // 
             GenerateBtn.Font = new Font("Microsoft JhengHei UI", 16F);
-            GenerateBtn.Location = new Point(22, 322);
+            GenerateBtn.Location = new Point(22, 542);
             GenerateBtn.Name = "GenerateBtn";
-            GenerateBtn.Size = new Size(438, 51);
+            GenerateBtn.Size = new Size(763, 51);
             GenerateBtn.TabIndex = 14;
             GenerateBtn.Text = "產生";
             GenerateBtn.UseVisualStyleBackColor = true;
@@ -227,11 +235,59 @@
             label1.Size = new Size(0, 15);
             label1.TabIndex = 17;
             // 
+            // DNSTextBox
+            // 
+            DNSTextBox.Location = new Point(22, 335);
+            DNSTextBox.Multiline = true;
+            DNSTextBox.Name = "DNSTextBox";
+            DNSTextBox.ScrollBars = ScrollBars.Vertical;
+            DNSTextBox.Size = new Size(763, 90);
+            DNSTextBox.TabIndex = 20;
+            // 
+            // DNSLabel
+            // 
+            DNSLabel.AutoSize = true;
+            DNSLabel.Location = new Point(22, 317);
+            DNSLabel.Name = "DNSLabel";
+            DNSLabel.Size = new Size(67, 15);
+            DNSLabel.TabIndex = 19;
+            DNSLabel.Text = "允許的域名";
+            // 
+            // IPTextBox
+            // 
+            IPTextBox.Location = new Point(22, 446);
+            IPTextBox.Multiline = true;
+            IPTextBox.Name = "IPTextBox";
+            IPTextBox.ScrollBars = ScrollBars.Vertical;
+            IPTextBox.Size = new Size(763, 90);
+            IPTextBox.TabIndex = 22;
+            // 
+            // IPLabel
+            // 
+            IPLabel.AutoSize = true;
+            IPLabel.Location = new Point(22, 428);
+            IPLabel.Name = "IPLabel";
+            IPLabel.Size = new Size(77, 15);
+            IPLabel.TabIndex = 21;
+            IPLabel.Text = "允許的IP地址";
+            // 
+            // DNSErrorProvider
+            // 
+            DNSErrorProvider.ContainerControl = this;
+            // 
+            // IPErrorProvider
+            // 
+            IPErrorProvider.ContainerControl = this;
+            // 
             // SelfSignedCertificateForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(480, 385);
+            ClientSize = new Size(809, 607);
+            Controls.Add(IPTextBox);
+            Controls.Add(IPLabel);
+            Controls.Add(DNSTextBox);
+            Controls.Add(DNSLabel);
             Controls.Add(label1);
             Controls.Add(GenerateBtn);
             Controls.Add(CommonNameTextBox);
@@ -259,6 +315,8 @@
             ((System.ComponentModel.ISupportInitialize)OrganizationalUnitErrorProvider).EndInit();
             ((System.ComponentModel.ISupportInitialize)EmailErrorProvider).EndInit();
             ((System.ComponentModel.ISupportInitialize)CommonNameErrorProvider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DNSErrorProvider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)IPErrorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -288,5 +346,11 @@
         private ErrorProvider EmailErrorProvider;
         private ErrorProvider CommonNameErrorProvider;
         private Label label1;
+        private TextBox DNSTextBox;
+        private Label DNSLabel;
+        private TextBox IPTextBox;
+        private Label IPLabel;
+        private ErrorProvider DNSErrorProvider;
+        private ErrorProvider IPErrorProvider;
     }
 }

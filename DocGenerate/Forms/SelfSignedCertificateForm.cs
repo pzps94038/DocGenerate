@@ -27,6 +27,13 @@ namespace DocGenerate.Forms
         private void SelfSignedCertificateForm_Load(object sender, EventArgs e)
         {
             Text = "自簽憑證設定";
+            var hostSb = new StringBuilder();
+            hostSb.AppendLine("*.localhost");
+            hostSb.AppendLine("localhost");
+            DNSTextBox.Text = hostSb.ToString();
+            var ipSb = new StringBuilder();
+            ipSb.AppendLine("127.0.0.1");
+            IPTextBox.Text = ipSb.ToString();
         }
 
         private void GenerateBtn_Click(object sender, EventArgs e)
@@ -61,6 +68,16 @@ namespace DocGenerate.Forms
             {
                 valid = false;
                 CommonNameErrorProvider.SetError(CommonNameTextBox, "請輸入通用名稱");
+            }
+            if (string.IsNullOrEmpty(DNSTextBox.Text))
+            {
+                valid = false;
+                DNSErrorProvider.SetError(DNSTextBox, "請輸入允許的域名");
+            }
+            if (string.IsNullOrEmpty(IPTextBox.Text))
+            {
+                valid = false;
+                IPErrorProvider.SetError(IPTextBox, "請輸入允許的IP地址");
             }
             if (valid)
             {
@@ -104,9 +121,16 @@ namespace DocGenerate.Forms
                 sb.AppendLine("subjectAltName = @alt_names");
                 sb.AppendLine();
                 sb.AppendLine("[alt_names]");
-                sb.AppendLine("DNS.1 = *.localhost");
-                sb.AppendLine("DNS.2 = localhost");
-                sb.AppendLine("IP.1 = 192.168.1.1");
+                var dnsList = DNSTextBox.Lines.Select(a => a.Trim()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+                for (int i = 0; i < dnsList.Count; i++)
+                {
+                    sb.AppendLine(@$"DNS.{i + 1} = {dnsList[i]}");
+                }
+                var ipList = IPTextBox.Lines.Select(a => a.Trim()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+                for (int i = 0; i < ipList.Count; i++)
+                {
+                    sb.AppendLine(@$"IP.{i + 1} = {ipList[i]}");
+                }
                 string sslConfig = sb.ToString();
                 File.WriteAllText(sslConfigFullPath, sslConfig, Encoding.UTF8);
                 Process cmd = new Process();
@@ -122,21 +146,36 @@ namespace DocGenerate.Forms
                     {
                         sw.WriteLine(@$"cd {cmdPath}");
                         sw.WriteLine(@$"openssl req -x509 -new -nodes -sha256 -utf8 -days 3650 -newkey rsa:2048 -keyout {fileName}.key -out {fileName}.crt -config ssl.conf");
+                        sw.WriteLine(@$"openssl pkcs12 -export -in {fileName}.crt -inkey {fileName}.key -out {fileName}.pfx");
                     }
                 }
                 cmd.WaitForExit();
                 var keyFilePath = Path.Combine(cmdPath, $@"{fileName}.key");
                 var crtFilePath = Path.Combine(cmdPath, $@"{fileName}.crt");
-                using (var zipArchive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
+                var pfxFilePath = Path.Combine(cmdPath, $@"{fileName}.pfx");
+                if (!File.Exists(pfxFilePath))
                 {
-                    zipArchive.CreateEntryFromFile(keyFilePath, Path.GetFileName(keyFilePath));
-                    zipArchive.CreateEntryFromFile(crtFilePath, Path.GetFileName(crtFilePath));
+                    _sharedHelper.ShowInfoMsg("錯誤", @$"雙重密碼驗證錯誤!");
+                    // 刪除Temp產生資料
+                    File.Delete(sslConfigFileName);
+                    File.Delete(keyFilePath);
+                    File.Delete(crtFilePath);
                 }
-                // 刪除Temp產生資料
-                File.Delete(sslConfigFileName);
-                File.Delete(keyFilePath);
-                File.Delete(crtFilePath);
-                _sharedHelper.ShowInfoMsg("文件產生完成", @$"文件已產生到{zipFilePath}!");
+                else
+                {
+                    using (var zipArchive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
+                    {
+                        zipArchive.CreateEntryFromFile(keyFilePath, Path.GetFileName(keyFilePath));
+                        zipArchive.CreateEntryFromFile(crtFilePath, Path.GetFileName(crtFilePath));
+                        zipArchive.CreateEntryFromFile(pfxFilePath, Path.GetFileName(pfxFilePath));
+                    }
+                    // 刪除Temp產生資料
+                    File.Delete(sslConfigFileName);
+                    File.Delete(keyFilePath);
+                    File.Delete(crtFilePath);
+                    File.Delete(pfxFilePath);
+                    _sharedHelper.ShowInfoMsg("文件產生完成", @$"文件已產生到{zipFilePath}!");
+                }
             }
         }
     }
