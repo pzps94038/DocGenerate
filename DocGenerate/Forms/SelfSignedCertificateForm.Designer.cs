@@ -76,6 +76,7 @@
             CountryTextBox.Size = new Size(763, 23);
             CountryTextBox.TabIndex = 0;
             CountryTextBox.Text = "TW";
+            CountryTextBox.Validating += CountryTextBox_Validating;
             // 
             // CountryLabel
             // 
@@ -102,6 +103,7 @@
             ProvinceTextBox.Size = new Size(763, 23);
             ProvinceTextBox.TabIndex = 3;
             ProvinceTextBox.Text = "Taiwan";
+            ProvinceTextBox.Validating += ProvinceTextBox_Validating;
             // 
             // CityTextBox
             // 
@@ -110,6 +112,7 @@
             CityTextBox.Size = new Size(763, 23);
             CityTextBox.TabIndex = 5;
             CityTextBox.Text = "Taipei";
+            CityTextBox.Validating += CityTextBox_Validating;
             // 
             // CityLabel
             // 
@@ -127,6 +130,7 @@
             OrganizationNameTextBox.Size = new Size(763, 23);
             OrganizationNameTextBox.TabIndex = 7;
             OrganizationNameTextBox.Text = "組織名稱";
+            OrganizationNameTextBox.Validating += OrganizationNameTextBox_Validating;
             // 
             // OrganizationNameLabel
             // 
@@ -144,6 +148,7 @@
             OrganizationalUnitTextBox.Size = new Size(763, 23);
             OrganizationalUnitTextBox.TabIndex = 9;
             OrganizationalUnitTextBox.Text = "IT Department";
+            OrganizationalUnitTextBox.Validating += OrganizationalUnitTextBox_Validating;
             // 
             // OrganizationalUnitLabel
             // 
@@ -161,6 +166,7 @@
             EmailTextBox.Size = new Size(763, 23);
             EmailTextBox.TabIndex = 11;
             EmailTextBox.Text = "admin@example.com";
+            EmailTextBox.Validating += EmailTextBox_Validating;
             // 
             // EmailLabel
             // 
@@ -178,6 +184,7 @@
             CommonNameTextBox.Size = new Size(763, 23);
             CommonNameTextBox.TabIndex = 13;
             CommonNameTextBox.Text = "通用名稱";
+            CommonNameTextBox.Validating += CommonNameTextBox_Validating;
             // 
             // CommonNameLabel
             // 
@@ -243,6 +250,7 @@
             DNSTextBox.ScrollBars = ScrollBars.Vertical;
             DNSTextBox.Size = new Size(763, 90);
             DNSTextBox.TabIndex = 20;
+            DNSTextBox.Validating += DNSTextBox_Validating;
             // 
             // DNSLabel
             // 
@@ -261,6 +269,7 @@
             IPTextBox.ScrollBars = ScrollBars.Vertical;
             IPTextBox.Size = new Size(763, 90);
             IPTextBox.TabIndex = 22;
+            IPTextBox.Validating += IPTextBox_Validating;
             // 
             // IPLabel
             // 

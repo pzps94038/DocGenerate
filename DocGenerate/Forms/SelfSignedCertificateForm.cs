@@ -39,45 +39,41 @@ namespace DocGenerate.Forms
         private void GenerateBtn_Click(object sender, EventArgs e)
         {
             var valid = true;
-            if (string.IsNullOrEmpty(CountryTextBox.Text))
+            if (!CountryValidating())
             {
                 valid = false;
-                CountryErrorProvider.SetError(CountryTextBox, "請輸入國家代碼");
             }
-            if (string.IsNullOrEmpty(ProvinceTextBox.Text))
+            if (!ProvinceValidating())
             {
                 valid = false;
-                ProvinceErrorProvider.SetError(ProvinceTextBox, "請輸入所屬省/州");
             }
-            if (string.IsNullOrEmpty(CityTextBox.Text))
+            if (!CityValidating())
             {
                 valid = false;
-                CityErrorProvider.SetError(CityTextBox, "請輸入所在城市");
             }
-            if (string.IsNullOrEmpty(OrganizationNameTextBox.Text))
+            if (!OrganizationNameValidating())
             {
                 valid = false;
-                OrganizationNameErrorProvider.SetError(OrganizationNameTextBox, "請輸入組織名稱");
             }
-            if (string.IsNullOrEmpty(OrganizationalUnitTextBox.Text))
+            if (!OrganizationalUnitValidating())
             {
                 valid = false;
-                OrganizationalUnitErrorProvider.SetError(OrganizationalUnitTextBox, "請輸入組織單位");
             }
-            if (string.IsNullOrEmpty(CommonNameTextBox.Text))
+            if (!EmailValidating())
             {
                 valid = false;
-                CommonNameErrorProvider.SetError(CommonNameTextBox, "請輸入通用名稱");
             }
-            if (string.IsNullOrEmpty(DNSTextBox.Text))
+            if (!CommonNameValidating())
             {
                 valid = false;
-                DNSErrorProvider.SetError(DNSTextBox, "請輸入允許的域名");
             }
-            if (string.IsNullOrEmpty(IPTextBox.Text))
+            if (!DNSValidating())
             {
                 valid = false;
-                IPErrorProvider.SetError(IPTextBox, "請輸入允許的IP地址");
+            }
+            if (!IPValidating())
+            {
+                valid = false;
             }
             if (valid)
             {
@@ -178,5 +174,149 @@ namespace DocGenerate.Forms
                 }
             }
         }
+
+        private bool CountryValidating()
+        {
+            if (string.IsNullOrEmpty(CountryTextBox.Text))
+            {
+                CountryErrorProvider.SetError(CountryTextBox, "請輸入國家代碼");
+                return false;
+            }
+            else
+            {
+                CountryErrorProvider.SetError(CountryTextBox, "");
+                return true;
+            }
+        }
+
+        private bool ProvinceValidating()
+        {
+            if (string.IsNullOrEmpty(ProvinceTextBox.Text))
+            {
+                ProvinceErrorProvider.SetError(ProvinceTextBox, "請輸入所屬省/州");
+                return false;
+            }
+            else
+            {
+                ProvinceErrorProvider.SetError(ProvinceTextBox, "");
+                return true;
+            }
+        }
+
+        private bool CityValidating()
+        {
+            if (string.IsNullOrEmpty(CityTextBox.Text))
+            {
+                CityErrorProvider.SetError(CityTextBox, "請輸入所在城市");
+                return false;
+            }
+            else
+            {
+                CityErrorProvider.SetError(CityTextBox, "");
+                return true;
+            }
+        }
+
+        private bool OrganizationNameValidating()
+        {
+            if (string.IsNullOrEmpty(OrganizationNameTextBox.Text))
+            {
+                OrganizationNameErrorProvider.SetError(OrganizationNameTextBox, "請輸入組織名稱");
+                return false;
+            }
+            else
+            {
+                OrganizationNameErrorProvider.SetError(OrganizationNameTextBox, "");
+                return true;
+            }
+        }
+
+        private bool OrganizationalUnitValidating()
+        {
+            if (string.IsNullOrEmpty(OrganizationalUnitTextBox.Text))
+            {
+                OrganizationalUnitErrorProvider.SetError(OrganizationalUnitTextBox, "請輸入組織單位");
+                return false;
+            }
+            else
+            {
+                OrganizationalUnitErrorProvider.SetError(OrganizationalUnitTextBox, "");
+                return true;
+            }
+        }
+        private bool EmailValidating()
+        {
+            if (string.IsNullOrEmpty(EmailTextBox.Text))
+            {
+                EmailErrorProvider.SetError(EmailTextBox, "請輸入電子郵件");
+                return false;
+            }
+            else
+            {
+                EmailErrorProvider.SetError(EmailTextBox, "");
+                return true;
+            }
+        }
+
+        private bool CommonNameValidating()
+        {
+            if (string.IsNullOrEmpty(CommonNameTextBox.Text))
+            {
+                CommonNameErrorProvider.SetError(CommonNameTextBox, "請輸入通用名稱");
+                return false;
+            }
+            else
+            {
+                CommonNameErrorProvider.SetError(CommonNameTextBox, "");
+                return true;
+            }
+        }
+
+        private bool DNSValidating()
+        {
+            if (string.IsNullOrEmpty(DNSTextBox.Text))
+            {
+                DNSErrorProvider.SetError(DNSTextBox, "請輸入允許的域名");
+                return false;
+            }
+            else
+            {
+                DNSErrorProvider.SetError(DNSTextBox, "");
+                return true;
+            }
+        }
+
+        private bool IPValidating()
+        {
+            if (string.IsNullOrEmpty(IPTextBox.Text))
+            {
+                IPErrorProvider.SetError(IPTextBox, "請輸入允許的IP地址");
+                return false;
+            }
+            else
+            {
+                IPErrorProvider.SetError(IPTextBox, "");
+                return true;
+            }
+        }
+
+
+        private void CountryTextBox_Validating(object sender, CancelEventArgs e) => CountryValidating();
+
+        private void ProvinceTextBox_Validating(object sender, CancelEventArgs e) => ProvinceValidating();
+
+        private void CityTextBox_Validating(object sender, CancelEventArgs e) => CityValidating();
+
+        private void OrganizationNameTextBox_Validating(object sender, CancelEventArgs e) => OrganizationNameValidating();
+
+        private void OrganizationalUnitTextBox_Validating(object sender, CancelEventArgs e) => OrganizationalUnitValidating();
+
+        private void EmailTextBox_Validating(object sender, CancelEventArgs e) => EmailValidating();
+
+        private void CommonNameTextBox_Validating(object sender, CancelEventArgs e) => CommonNameValidating();
+
+        private void DNSTextBox_Validating(object sender, CancelEventArgs e) => DNSValidating();
+
+        private void IPTextBox_Validating(object sender, CancelEventArgs e) => IPValidating();
     }
 }
