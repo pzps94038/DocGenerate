@@ -70,7 +70,7 @@ namespace DocGenerate.Model.SqlExcelDoc
 							AND ep.minor_id = 0
 							AND ep.name = 'MS_Description'
 						WHERE
-							p.is_ms_shipped = 0
+							p.is_ms_shipped = 0 AND ep.major_id IS NOT NULL
 						ORDER BY
 							ProcedureName;";
             var result = _connection.Query<ProcedureSpecifications>(sql);
@@ -93,7 +93,7 @@ namespace DocGenerate.Model.SqlExcelDoc
 							MAX(CASE WHEN k.CONSTRAINT_TYPE = 'UNIQUE' THEN 'Y' ELSE 'N' END) AS IsUnique,
 							MAX(CASE WHEN k.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 'Y' ELSE 'N' END) AS IsPrimaryKey,
 							MAX(CASE WHEN k.CONSTRAINT_TYPE = 'FOREIGN KEY' THEN 'Y' ELSE 'N' END) AS IsForeignKey,
-							(fk.TABLE_SCHEMA + '.' + fk.REFERENCED_TABLE_NAME) AS ReferencedTableName,
+							fk.REFERENCED_TABLE_NAME AS ReferencedTableName,
 							fk.REFERENCED_COLUMN_NAME AS ReferencedColumnName
 						FROM
 							INFORMATION_SCHEMA.TABLES t
@@ -124,7 +124,7 @@ namespace DocGenerate.Model.SqlExcelDoc
 						WHERE 
 							t.TABLE_TYPE = 'BASE TABLE'
 						GROUP BY
-							t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.IS_NULLABLE, c.CHARACTER_MAXIMUM_LENGTH, ep.value, (fk.TABLE_SCHEMA + '.' + fk.REFERENCED_TABLE_NAME), fk.REFERENCED_COLUMN_NAME
+							t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.IS_NULLABLE, c.CHARACTER_MAXIMUM_LENGTH, ep.value, fk.REFERENCED_TABLE_NAME, fk.REFERENCED_COLUMN_NAME
 						ORDER BY 
 							TableName, IsPrimaryKey DESC, IsForeignKey DESC, ColumnName
 						";
