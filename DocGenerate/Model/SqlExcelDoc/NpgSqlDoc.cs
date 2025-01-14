@@ -85,7 +85,6 @@ namespace DocGenerate.Model.SqlExcelDoc
                             t.table_name AS ""TableName"",
                             c.column_name AS ""ColumnName"",
                             CASE
-                                -- 這裡對應 PostgreSQL 的數據類型到 SQL Server 常見格式
                                 WHEN c.data_type = 'character varying' THEN 'VARCHAR'
                                 WHEN c.data_type = 'character' THEN 'CHAR'
                                 WHEN c.data_type = 'text' THEN 'TEXT'
@@ -94,7 +93,7 @@ namespace DocGenerate.Model.SqlExcelDoc
                                 WHEN c.data_type = 'integer' THEN 'INT'
                                 WHEN c.data_type = 'bigint' THEN 'BIGINT'
                                 WHEN c.data_type = 'decimal' THEN 'DECIMAL'
-                                WHEN c.data_type = 'numeric' THEN 'NUMERIC'
+                                WHEN c.data_type = 'numeric' THEN 'DECIMAL'
                                 WHEN c.data_type = 'real' THEN 'FLOAT'
                                 WHEN c.data_type = 'double precision' THEN 'FLOAT'
                                 WHEN c.data_type = 'money' THEN 'MONEY'
@@ -105,6 +104,7 @@ namespace DocGenerate.Model.SqlExcelDoc
                                 WHEN c.data_type = 'interval' THEN 'TIME'
                                 WHEN c.data_type = 'uuid' THEN 'UNIQUEIDENTIFIER'
                                 WHEN c.data_type = 'bytea' THEN 'BINARY'
+                                WHEN c.data_type = 'timestamp with time zone' THEN 'DATETIME'
                                 ELSE c.data_type
                             END AS ""DataType"",
                             CASE
@@ -112,7 +112,14 @@ namespace DocGenerate.Model.SqlExcelDoc
                                 WHEN c.is_nullable = 'NO' THEN 'Y'
                                 ELSE 'N'
                             END AS ""NotNull"",
-                            c.character_maximum_length AS ""Length"",
+                            CASE
+                                WHEN c.data_type IN ('character varying', 'varchar', 'character', 'char', 'text') THEN
+                                    c.character_maximum_length::TEXT  -- 將數字轉為字串
+                                WHEN c.data_type IN ('numeric', 'decimal') THEN
+                                    CONCAT(c.numeric_precision, ',', c.numeric_scale)
+                                ELSE
+                                    NULL
+                            END AS ""Length"",
                             COALESCE(ep.description, '') AS ""Description"",
                             MAX(CASE WHEN k.constraint_type = 'UNIQUE' THEN 'Y' ELSE 'N' END) AS ""IsUnique"",
                             MAX(CASE WHEN k.constraint_type = 'PRIMARY KEY' THEN 'Y' ELSE 'N' END) AS ""IsPrimaryKey"",
@@ -147,13 +154,13 @@ namespace DocGenerate.Model.SqlExcelDoc
                                 INNER JOIN
                                     information_schema.key_column_usage kcu2 ON kcu2.constraint_name = rc.unique_constraint_name AND kcu2.constraint_schema = rc.unique_constraint_schema
                             ) AS fk ON fk.table_schema = c.table_schema AND fk.table_name = c.table_name AND fk.column_name = c.column_name
-                        WHERE
-                            t.table_type = 'BASE TABLE'
+                        WHERE t.table_schema NOT IN ('pg_catalog', 'information_schema') and t.table_type = 'BASE TABLE'
                         GROUP BY
-                            t.table_schema, t.table_name, c.column_name, c.data_type, c.is_nullable, c.character_maximum_length, ep.description, fk.referenced_table_name, fk.referenced_column_name
+                            t.table_schema, t.table_name, c.column_name, c.data_type, c.is_nullable, c.character_maximum_length,
+                            c.numeric_precision, c.numeric_scale, ep.description, fk.referenced_table_name, fk.referenced_column_name
                         ORDER BY
                             ""TableName"", ""IsPrimaryKey"" DESC, ""IsForeignKey"" DESC, ""ColumnName"";
-						";
+            ";
             var result = _connection.Query<TableSpecifications>(sql);
             return result;
         }
