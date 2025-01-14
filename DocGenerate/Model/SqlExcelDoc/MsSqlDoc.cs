@@ -59,7 +59,7 @@ namespace DocGenerate.Model.SqlExcelDoc
 
         public override IEnumerable<ProcedureSpecifications> GetStoredProcedureSpecifications()
         {
-            // 檢視表
+            // 預存
             var sql = @"SELECT
 							p.name as ProcedureName,
 							ep.value AS Description

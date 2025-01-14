@@ -20,6 +20,7 @@ namespace DocGenerate.Forms
         public bool IsConfirm = false;
         private readonly DocGenerateDbContext _docGenerateDbContext;
         private List<DatabaseSetting> _settings = new List<DatabaseSetting>();
+
         public AddDbSettingForm(
             DocGenerateDbContext docGenerateDbContext
         )
@@ -52,6 +53,7 @@ namespace DocGenerate.Forms
             options.Add(new SelectOption<DatabaseType?>("請選擇資料庫類型", null));
             options.Add(new SelectOption<DatabaseType?>("Microsoft SQL Server", DatabaseType.MicrosoftSQLServer));
             options.Add(new SelectOption<DatabaseType?>("MySQL", DatabaseType.MySQL));
+            options.Add(new SelectOption<DatabaseType?>("PostgreSQL", DatabaseType.PostgreSQL));
             DbTypeComboBox.DataSource = options;
             DbTypeComboBox.SelectedIndex = 0;
         }
@@ -129,7 +131,6 @@ namespace DocGenerate.Forms
             }
             else
             {
-
                 if (DatabaseSetting != null)
                 {
                     // 有帶入參數且跟原本輸入不同

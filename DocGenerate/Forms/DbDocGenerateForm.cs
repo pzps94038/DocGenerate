@@ -25,6 +25,7 @@ namespace DocGenerate
         private readonly ISharedHelper _sharedHelper;
         private readonly ISqlExcelDocHelper _sqlExcelDocHelper;
         private List<DatabaseSetting> _settings = new List<DatabaseSetting>();
+
         public DbDocGenerateForm(
             IServiceProvider serviceProvider,
             DocGenerateDbContext docGenerateDbContext,
@@ -108,8 +109,13 @@ namespace DocGenerate
                     case DatabaseType.MySQL:
                         type = "MySQL";
                         break;
+
                     case DatabaseType.MicrosoftSQLServer:
                         type = "Microsoft SQL Server";
+                        break;
+
+                    case DatabaseType.PostgreSQL:
+                        type = "PostgreSQL";
                         break;
                 }
                 var createDate = data.CreateDate.ToString("yyyy/MM/dd HH:mm:ss");
@@ -205,8 +211,13 @@ namespace DocGenerate
                         case DatabaseType.MySQL:
                             type = "MySQL";
                             break;
+
                         case DatabaseType.MicrosoftSQLServer:
                             type = "Microsoft SQL Server";
+                            break;
+
+                        case DatabaseType.PostgreSQL:
+                            type = "PostgreSQL";
                             break;
                     }
                     DbTypeTextBox.Text = type;
@@ -257,7 +268,6 @@ namespace DocGenerate
             }
         }
 
-
         private void AddBtn_Click(object sender, EventArgs e)
         {
             try
@@ -305,8 +315,13 @@ namespace DocGenerate
                         case DatabaseType.MySQL:
                             type = "MYSQL";
                             break;
+
                         case DatabaseType.MicrosoftSQLServer:
                             type = "MSSQL";
+                            break;
+
+                        case DatabaseType.PostgreSQL:
+                            type = "PostgreSQL";
                             break;
                     }
                     Cursor.Current = Cursors.WaitCursor;

@@ -9,6 +9,7 @@ namespace DocGenerate.Model.Shared
     public enum DatabaseType
     {
         MySQL,
-        MicrosoftSQLServer
+        MicrosoftSQLServer,
+        PostgreSQL
     }
 }

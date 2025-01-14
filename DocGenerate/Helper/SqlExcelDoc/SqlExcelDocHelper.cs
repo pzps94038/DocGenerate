@@ -10,7 +10,6 @@ namespace DocGenerate.Helper.SqlExcelDoc
 {
     internal class SqlExcelDocHelper : ISqlExcelDocHelper
     {
-
         /// <summary>
         /// 產生資料庫規格文件
         /// </summary>
@@ -32,9 +31,15 @@ namespace DocGenerate.Helper.SqlExcelDoc
                     case "MSSQL":
                         sqlDoc = new MsSqlDoc(connection);
                         break;
+
                     case "MYSQL":
                         sqlDoc = new MySqlDoc(connection);
                         break;
+
+                    case "POSTGRESQL":
+                        sqlDoc = new NpgSqlDoc(connection);
+                        break;
+
                     default:
                         throw new Exception("不支援的資料庫類型");
                 }
@@ -65,7 +70,7 @@ namespace DocGenerate.Helper.SqlExcelDoc
                 sw.Close();
                 sqlDoc.Dispose();
             }
-            catch (SqlException ex) 
+            catch (SqlException ex)
             {
                 throw new Exception("資料庫連接異常", ex);
             }
@@ -196,7 +201,6 @@ namespace DocGenerate.Helper.SqlExcelDoc
                     referencedTableNameCell.SetCellValue((item.ReferencedTableName as string) ?? "");
                     row.CreateStyleCell(8, cellStyle).SetCellValue((item.ReferencedColumnName as string) ?? "");
                     row.CreateStyleCell(9, cellStyle).SetCellValue((item.Description as string) ?? "");
-
                 }
                 CellRangeAddress filterRange = new CellRangeAddress(1, i, 0, 9);
 
