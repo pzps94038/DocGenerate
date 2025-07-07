@@ -1,4 +1,5 @@
-﻿using DocGenerate.Interface.SqlExcelDoc;
+﻿using DocGenerate.Constants;
+using DocGenerate.Interface.SqlExcelDoc;
 using DocGenerate.Model.SqlExcelDoc;
 using Microsoft.Data.SqlClient;
 using NPOI.SS.UserModel;
@@ -28,15 +29,15 @@ namespace DocGenerate.Helper.SqlExcelDoc
                 var upperType = type.ToUpper();
                 switch (upperType)
                 {
-                    case "MSSQL":
+                    case DbType.MicrosoftSQLServer:
                         sqlDoc = new MsSqlDoc(connection);
                         break;
 
-                    case "MYSQL":
+                    case DbType.MySQL:
                         sqlDoc = new MySqlDoc(connection);
                         break;
 
-                    case "POSTGRESQL":
+                    case DbType.PostgreSQL:
                         sqlDoc = new NpgSqlDoc(connection);
                         break;
 
@@ -151,17 +152,22 @@ namespace DocGenerate.Helper.SqlExcelDoc
                 titleRow.CreateStyleCell(0, titleCellStyle).SetCellValue("表格名稱");
                 titleRow.CreateStyleCell(1, titleCellStyle).SetCellValue(keyPair.Key);
                 var headerRow = sheet.CreateRow(1);
-                headerRow.CreateStyleCell(0, headerStyle).SetCellValue("項次");
-                headerRow.CreateStyleCell(1, headerStyle).SetCellValue("欄位名稱");
-                headerRow.CreateStyleCell(2, headerStyle).SetCellValue("型態");
-                headerRow.CreateStyleCell(3, headerStyle).SetCellValue("長度");
-                headerRow.CreateStyleCell(4, headerStyle).SetCellValue("NOT NULL");
-                headerRow.CreateStyleCell(5, headerStyle).SetCellValue("UNIQUE");
-                headerRow.CreateStyleCell(6, headerStyle).SetCellValue("FOREIGN KEY");
-                headerRow.CreateStyleCell(7, headerStyle).SetCellValue("外鍵表格名");
-                headerRow.CreateStyleCell(8, headerStyle).SetCellValue("外鍵欄位名");
-                headerRow.CreateStyleCell(9, headerStyle).SetCellValue("描述");
+                var headerCellIdx = 0;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("項次");
+                headerCellIdx++;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("欄位名稱");
+                headerCellIdx++;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("型態");
+                headerCellIdx++;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("長度");
+                headerCellIdx++;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("NOT NULL");
+                headerCellIdx++;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("FOREIGN KEY");
+                headerCellIdx++;
+                headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("描述");
                 int i = 2;
+                var lastColIdx = 0;
                 foreach (var item in keyPair.ToList())
                 {
                     var row = sheet.CreateRow(i);
@@ -174,39 +180,31 @@ namespace DocGenerate.Helper.SqlExcelDoc
                         cellStyle.FillForegroundColor = IndexedColors.Yellow.Index;
                         referencedTableNameCellStyle.FillForegroundColor = IndexedColors.Yellow.Index;
                     }
-                    row.CreateStyleCell(0, cellStyle).SetCellValue(i - 2);
-                    row.CreateStyleCell(1, cellStyle).SetCellValue((item.ColumnName as string) ?? "");
-                    row.CreateStyleCell(2, cellStyle).SetCellValue((item.DataType as string).ToUpper() ?? "");
+                    var cellIdx = 0;
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue(i - 2);
+                    cellIdx++;
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue((item.ColumnName as string) ?? "");
+                    cellIdx++;
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue((item.DataType as string).ToUpper() ?? "");
+                    cellIdx++;
                     var len = ((item.Length as string) ?? "") == "-1" ? "MAX" : ((item.Length as string) ?? "");
-                    row.CreateStyleCell(3, cellStyle).SetCellValue(len);
-                    row.CreateStyleCell(4, cellStyle).SetCellValue((item.NotNull as string) ?? "");
-                    row.CreateStyleCell(5, cellStyle).SetCellValue((item.IsUnique as string) ?? "");
-                    row.CreateStyleCell(6, cellStyle).SetCellValue((item.IsForeignKey as string) ?? "");
-                    NPOI.SS.UserModel.ICell referencedTableNameCell;
-                    if (item.ReferencedTableName != null)
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue(len);
+                    cellIdx++;
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue((item.NotNull as string) ?? "");
+                    cellIdx++;
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue((item.IsForeignKey as string) ?? "");
+                    cellIdx++;
+                    row.CreateStyleCell(cellIdx, cellStyle).SetCellValue((item.Description as string) ?? "");
+                    if (cellIdx > lastColIdx)
                     {
-                        referencedTableNameCellStyle.Underline = FontUnderlineType.Single;
-                        referencedTableNameCellStyle.FontColor = IndexedColors.Blue.Index;
-                        referencedTableNameCell = row.CreateStyleCell(7, referencedTableNameCellStyle);
-                        var hyperlink = new XSSFHyperlink(HyperlinkType.Document)
-                        {
-                            Address = $"'{ShortenTableName(item.ReferencedTableName)}'!A1"
-                        };
-                        referencedTableNameCell.Hyperlink = hyperlink;
+                        lastColIdx = cellIdx;
                     }
-                    else
-                    {
-                        referencedTableNameCell = row.CreateStyleCell(7, cellStyle);
-                    }
-                    referencedTableNameCell.SetCellValue((item.ReferencedTableName as string) ?? "");
-                    row.CreateStyleCell(8, cellStyle).SetCellValue((item.ReferencedColumnName as string) ?? "");
-                    row.CreateStyleCell(9, cellStyle).SetCellValue((item.Description as string) ?? "");
                 }
-                CellRangeAddress filterRange = new CellRangeAddress(1, i, 0, 9);
+                CellRangeAddress filterRange = new CellRangeAddress(1, i, 0, lastColIdx);
 
                 // 在工作表上設置自動篩選的範圍
                 sheet.SetAutoFilter(filterRange);
-                sheet.AutoSheetSize(9);
+                sheet.AutoSheetSize(lastColIdx);
             }
         }
 

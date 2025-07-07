@@ -107,15 +107,15 @@ namespace DocGenerate
                 switch (dbType)
                 {
                     case DatabaseType.MySQL:
-                        type = "MySQL";
+                        type = DocGenerate.Constants.DbType.MySQL;
                         break;
 
                     case DatabaseType.MicrosoftSQLServer:
-                        type = "Microsoft SQL Server";
+                        type = DocGenerate.Constants.DbType.MicrosoftSQLServer;
                         break;
 
                     case DatabaseType.PostgreSQL:
-                        type = "PostgreSQL";
+                        type = DocGenerate.Constants.DbType.PostgreSQL;
                         break;
                 }
                 var createDate = data.CreateDate.ToString("yyyy/MM/dd HH:mm:ss");
@@ -209,15 +209,15 @@ namespace DocGenerate
                     switch (dbType)
                     {
                         case DatabaseType.MySQL:
-                            type = "MySQL";
+                            type = DocGenerate.Constants.DbType.MySQL;
                             break;
 
                         case DatabaseType.MicrosoftSQLServer:
-                            type = "Microsoft SQL Server";
+                            type = DocGenerate.Constants.DbType.MicrosoftSQLServer;
                             break;
 
                         case DatabaseType.PostgreSQL:
-                            type = "PostgreSQL";
+                            type = DocGenerate.Constants.DbType.PostgreSQL;
                             break;
                     }
                     DbTypeTextBox.Text = type;
@@ -313,15 +313,15 @@ namespace DocGenerate
                     switch (dbType)
                     {
                         case DatabaseType.MySQL:
-                            type = "MYSQL";
+                            type = DocGenerate.Constants.DbType.MySQL;
                             break;
 
                         case DatabaseType.MicrosoftSQLServer:
-                            type = "MSSQL";
+                            type = DocGenerate.Constants.DbType.MicrosoftSQLServer;
                             break;
 
                         case DatabaseType.PostgreSQL:
-                            type = "PostgreSQL";
+                            type = DocGenerate.Constants.DbType.PostgreSQL;
                             break;
                     }
                     Cursor.Current = Cursors.WaitCursor;

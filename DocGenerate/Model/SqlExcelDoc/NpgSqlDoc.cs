@@ -121,11 +121,8 @@ namespace DocGenerate.Model.SqlExcelDoc
                                     NULL
                             END AS ""Length"",
                             COALESCE(ep.description, '') AS ""Description"",
-                            MAX(CASE WHEN k.constraint_type = 'UNIQUE' THEN 'Y' ELSE 'N' END) AS ""IsUnique"",
                             MAX(CASE WHEN k.constraint_type = 'PRIMARY KEY' THEN 'Y' ELSE 'N' END) AS ""IsPrimaryKey"",
-                            MAX(CASE WHEN k.constraint_type = 'FOREIGN KEY' THEN 'Y' ELSE 'N' END) AS ""IsForeignKey"",
-                            fk.referenced_table_name AS ""ReferencedTableName"",
-                            fk.referenced_column_name AS ""ReferencedColumnName""
+                            MAX(CASE WHEN k.constraint_type = 'FOREIGN KEY' THEN 'Y' ELSE 'N' END) AS ""IsForeignKey""
                         FROM
                             information_schema.tables t
                         INNER JOIN
@@ -137,27 +134,10 @@ namespace DocGenerate.Model.SqlExcelDoc
                             information_schema.constraint_column_usage ccu ON c.table_schema = ccu.table_schema AND c.table_name = ccu.table_name AND c.column_name = ccu.column_name
                         LEFT JOIN
                             information_schema.table_constraints k ON ccu.constraint_schema = k.constraint_schema AND ccu.constraint_name = k.constraint_name
-                        LEFT JOIN
-                            (
-                                SELECT
-                                    rc.constraint_schema,
-                                    rc.constraint_name,
-                                    kcu.table_schema,
-                                    kcu.table_name,
-                                    kcu.column_name,
-                                    kcu2.table_name AS referenced_table_name,
-                                    kcu2.column_name AS referenced_column_name
-                                FROM
-                                    information_schema.referential_constraints rc
-                                INNER JOIN
-                                    information_schema.key_column_usage kcu ON kcu.constraint_name = rc.constraint_name
-                                INNER JOIN
-                                    information_schema.key_column_usage kcu2 ON kcu2.constraint_name = rc.unique_constraint_name AND kcu2.constraint_schema = rc.unique_constraint_schema
-                            ) AS fk ON fk.table_schema = c.table_schema AND fk.table_name = c.table_name AND fk.column_name = c.column_name
                         WHERE t.table_schema NOT IN ('pg_catalog', 'information_schema') and t.table_type = 'BASE TABLE'
                         GROUP BY
                             t.table_schema, t.table_name, c.column_name, c.data_type, c.is_nullable, c.character_maximum_length,
-                            c.numeric_precision, c.numeric_scale, ep.description, fk.referenced_table_name, fk.referenced_column_name
+                            c.numeric_precision, c.numeric_scale, ep.description
                         ORDER BY
                             ""TableName"", ""IsPrimaryKey"" DESC, ""IsForeignKey"" DESC, ""ColumnName"";
             ";

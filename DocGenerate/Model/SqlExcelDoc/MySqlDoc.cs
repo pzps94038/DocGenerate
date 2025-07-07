@@ -11,6 +11,7 @@ namespace DocGenerate.Model.SqlExcelDoc
     public class MySqlDoc : SqlDoc
     {
         private MySqlConnection _connection;
+
         public MySqlDoc(string connectionString) : base(connectionString)
         {
             _connection = new MySqlConnection(connectionString);
@@ -19,15 +20,15 @@ namespace DocGenerate.Model.SqlExcelDoc
 
         public override IEnumerable<DatabaseSpecifications> GetDatabaseSpecifications()
         {
-            var sql = @"SELECT 
+            var sql = @"SELECT
                             TABLE_NAME AS TableName,
                             TABLE_TYPE AS Type,
                             TABLE_COMMENT AS Description
-                        FROM 
+                        FROM
                             information_schema.TABLES
-                        WHERE 
+                        WHERE
                             TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
-                        ORDER BY 
+                        ORDER BY
                             TableName;";
             var result = _connection.Query<DatabaseSpecifications>(sql);
             return result;
@@ -36,15 +37,15 @@ namespace DocGenerate.Model.SqlExcelDoc
         public override IEnumerable<DatabaseSpecifications> GetDatabaseViewSpecifications()
         {
             var sql = @"SELECT
-                            TABLE_NAME AS TableName, 
-                            'VIEW' AS Type, 
+                            TABLE_NAME AS TableName,
+                            'VIEW' AS Type,
                             TABLE_COMMENT AS Description
-                        FROM 
+                        FROM
                             information_schema.TABLES
-                        WHERE 
+                        WHERE
                             TABLE_TYPE = 'VIEW'
                             AND TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
-                        ORDER BY 
+                        ORDER BY
                             TableName;";
             var result = _connection.Query<DatabaseSpecifications>(sql);
             return result;
@@ -52,15 +53,15 @@ namespace DocGenerate.Model.SqlExcelDoc
 
         public override IEnumerable<ProcedureSpecifications> GetStoredProcedureSpecifications()
         {
-            var sql = @"SELECT 
+            var sql = @"SELECT
                             routine_name AS ProcedureName,
                             routine_comment AS Description
-                        FROM 
+                        FROM
                             information_schema.ROUTINES
-                        WHERE 
+                        WHERE
                             routine_type = 'PROCEDURE'
                             AND routine_schema NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
-                        ORDER BY 
+                        ORDER BY
                             ProcedureName;";
             var result = _connection.Query<ProcedureSpecifications>(sql);
             return result;
@@ -72,43 +73,28 @@ namespace DocGenerate.Model.SqlExcelDoc
                             t.TABLE_NAME AS TableName,
                             c.COLUMN_NAME AS ColumnName,
                             c.DATA_TYPE AS DataType,
-                            CASE 
+                            CASE
                                 WHEN c.IS_NULLABLE = 'YES' THEN 'N'
                                 ELSE 'Y'
                             END AS NotNull,
                             c.CHARACTER_MAXIMUM_LENGTH AS Length,
                             IFNULL(c.COLUMN_COMMENT, '') AS Description,
-                            MAX(CASE WHEN k.CONSTRAINT_TYPE = 'UNIQUE' THEN 'Y' ELSE 'N' END) AS IsUnique,
                             MAX(CASE WHEN k.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 'Y' ELSE 'N' END) AS IsPrimaryKey,
-                            MAX(CASE WHEN k.CONSTRAINT_TYPE = 'FOREIGN KEY' THEN 'Y' ELSE 'N' END) AS IsForeignKey,
-                            fk.REFERENCED_TABLE_NAME AS ReferencedTableName,
-                            fk.REFERENCED_COLUMN_NAME AS ReferencedColumnName
-                        FROM 
+                            MAX(CASE WHEN k.CONSTRAINT_TYPE = 'FOREIGN KEY' THEN 'Y' ELSE 'N' END) AS IsForeignKey
+                        FROM
                             INFORMATION_SCHEMA.TABLES t
-                        INNER JOIN 
+                        INNER JOIN
                             INFORMATION_SCHEMA.COLUMNS c ON t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME
-                        LEFT JOIN 
+                        LEFT JOIN
                             INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu ON kcu.TABLE_SCHEMA = c.TABLE_SCHEMA AND kcu.TABLE_NAME = c.TABLE_NAME AND kcu.COLUMN_NAME = c.COLUMN_NAME
-                        LEFT JOIN 
+                        LEFT JOIN
                             INFORMATION_SCHEMA.TABLE_CONSTRAINTS k ON kcu.CONSTRAINT_SCHEMA = k.CONSTRAINT_SCHEMA AND kcu.CONSTRAINT_NAME = k.CONSTRAINT_NAME
-                        LEFT JOIN 
-                            (SELECT 
-                                kcu.TABLE_SCHEMA,
-                                kcu.TABLE_NAME,
-                                kcu.COLUMN_NAME,
-                                kcu.REFERENCED_TABLE_NAME,
-                                kcu.REFERENCED_COLUMN_NAME
-                             FROM 
-                                INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
-                             WHERE 
-                                kcu.REFERENCED_TABLE_NAME IS NOT NULL
-                            ) AS fk ON kcu.TABLE_SCHEMA = fk.TABLE_SCHEMA AND kcu.TABLE_NAME = fk.TABLE_NAME AND kcu.COLUMN_NAME = fk.COLUMN_NAME
-                        WHERE 
+                        WHERE
                             t.TABLE_TYPE = 'BASE TABLE'
                             AND t.TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
                         GROUP BY
-                            t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.IS_NULLABLE, c.CHARACTER_MAXIMUM_LENGTH, c.COLUMN_COMMENT, fk.REFERENCED_TABLE_NAME, fk.REFERENCED_COLUMN_NAME
-                        ORDER BY 
+                            t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.IS_NULLABLE, c.CHARACTER_MAXIMUM_LENGTH, c.COLUMN_COMMENT
+                        ORDER BY
                             TableName, IsPrimaryKey DESC, IsForeignKey DESC, ColumnName;
             ";
             var result = _connection.Query<TableSpecifications>(sql);
@@ -117,20 +103,21 @@ namespace DocGenerate.Model.SqlExcelDoc
 
         public override IEnumerable<TriggerSpecifications> GetTriggerSpecifications()
         {
-            var sql = @"SELECT 
+            var sql = @"SELECT
                             event_object_table AS TableName,
                             trigger_name AS TriggerName,
                             action_timing AS TypeDesc
-                        FROM 
+                        FROM
                             information_schema.TRIGGERS
-                        WHERE 
+                        WHERE
                             trigger_schema NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
-                        ORDER BY 
-                            TableName, 
+                        ORDER BY
+                            TableName,
                             TriggerName;";
             var result = _connection.Query<TriggerSpecifications>(sql);
             return result;
         }
+
         public override void Dispose()
         {
             _connection.Dispose();
