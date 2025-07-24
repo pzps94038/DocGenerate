@@ -301,13 +301,17 @@ namespace DocGenerate
         {
             var uuid = (Guid)SettingComboBox.SelectedValue!;
             var data = _settings.FirstOrDefault(a => a.UUID == (Guid)SettingComboBox.SelectedValue!);
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            SaveFileDialog dialog = new SaveFileDialog
+            {
+                Title = "選擇儲存文件位置",
+                Filter = "Excel 檔案 (*.xlsx)|*.xlsx",
+                FileName = data?.Name + ".xlsx"
+            };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 if (data != null)
                 {
-                    var fileName = data.Name + ".xlsx";
-                    var fullPath = Path.Combine(dialog.SelectedPath, fileName);
+                    var fullPath = dialog.FileName;
                     var dbType = (DatabaseType)data.DataBaseType;
                     var type = "";
                     switch (dbType)
