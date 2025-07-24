@@ -145,7 +145,8 @@ namespace DocGenerate.Helper.SqlExcelDoc
             var group = tableSpecifications.GroupBy(a => a.TableName);
             foreach (var keyPair in group)
             {
-                var sheet = workbook.CreateSheet(ShortenTableName(keyPair.Key));
+                var name = ShortenTableName(keyPair.Key);
+                var sheet = workbook.CreateSheet(name);
                 var titleRow = sheet.CreateRow(0);
                 var titleCellStyle = new CellStyle();
                 titleCellStyle.IsBold = true;
@@ -274,9 +275,6 @@ namespace DocGenerate.Helper.SqlExcelDoc
         {
             // 直接處理表格名稱，無前綴
             string shortenedName = tableName;
-
-            // 移除非字母和數字的字符
-            shortenedName = Regex.Replace(shortenedName, @"[^a-zA-Z0-9]", "");
 
             // 使用首字母縮寫來縮短名稱
             if (shortenedName.Length > 31)
