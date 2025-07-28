@@ -57,4 +57,10 @@
 		</Content>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Asset\APIDoc\example.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

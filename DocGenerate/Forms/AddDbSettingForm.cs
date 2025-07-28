@@ -38,6 +38,10 @@ namespace DocGenerate.Forms
             {
                 InitForm(DatabaseSetting);
             }
+            else
+            {
+                InitForm();
+            }
         }
 
         private void CancelBtn_Click(object sender, EventArgs e)
@@ -58,6 +62,19 @@ namespace DocGenerate.Forms
             DbTypeComboBox.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// 沒帶入設定值，初始化表單
+        /// </summary>
+        private void InitForm()
+        {
+            SettingNameTextBox.Text = "識別名稱";
+            DbConnectionStringTextBox.Text = "Data Source=127.0.0.1;Initial Catalog=資料庫名稱;User ID=使用者;Password=密碼;TrustServerCertificate=true;";
+        }
+
+        /// <summary>
+        /// 初始化設定表單
+        /// </summary>
+        /// <param name="data"></param>
         private void InitForm(DatabaseSetting data)
         {
             var type = (DatabaseType)data.DataBaseType;

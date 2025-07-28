@@ -1,1042 +1,552 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.1",
   "info": {
-      "description": "This is a sample local Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
-      "version": "1.0.0",
-      "title": "Swagger Petstore",
-      "termsOfService": "http://swagger.io/terms/",
-      "contact": {
-          "email": "apiteam@swagger.io"
-      },
-      "license": {
-          "name": "Apache 2.0",
-          "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-      }
+    "title": "大題庫試卷內容輸出 API (以 出題高手 發想)",
+    "description": "以出題高手的使用需求，作為 API 規劃的起點，情境為每個學期開始前，匯入新題目的流程。<br>API 的路徑帶版本號，保留未來更新 API 格式時，同時相容新舊格式的彈性。<h2>流程概述</h2><h3>題目匯入 (服務端，如出題高手的角度來看)</h3><ol><li>指定學年度，抓回完整的課次資料 (章節名稱，節點之間的關聯）</li><li>同步所有終端節點 (leaf node) 的題目資訊</li><li>取得 (服務自己題庫) 缺少或需要更新題目檔案(Word, HTML, mp3)</li></ol><h3>錯題回報 + 更新</h3><ol><li>將用戶反應的狀況，回報給到大題庫作記錄，並標注該題為「待處理」</li><li>定時檢查「待處理」的題目，遇到有新版本或被下架，才將標注移除</li></ol>",
+    "version": "v0.0.2"
   },
-  "host": "petstore.swagger.io",
-  "basePath": "/v2",
-  "tags": [
-      {
-          "name": "pet",
-          "description": "Everything about your Pets",
-          "externalDocs": {
-              "description": "Find out more",
-              "url": "http://swagger.io"
-          }
-      },
-      {
-          "name": "store",
-          "description": "Access to Petstore orders"
-      },
-      {
-          "name": "user",
-          "description": "Operations about user",
-          "externalDocs": {
-              "description": "Find out more about our store",
-              "url": "http://swagger.io"
-          }
-      }
-  ],
-  "schemes": [
-      "https",
-      "http"
-  ],
   "paths": {
-      "/pet": {
-          "post": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Add a new pet to the store",
-              "description": "",
-              "operationId": "addPet",
-              "consumes": [
-                  "application/json",
-                  "application/xml"
-              ],
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "Pet object that needs to be added to the store",
-                      "required": true,
-                      "schema": {
-                          "$ref": "#/definitions/Pet"
-                      }
-                  }
-              ],
-              "responses": {
-                  "405": {
-                      "description": "Invalid input"
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ]
+    "/api/QuestionGet/CourseTree": {
+      "get": {
+        "tags": [
+          "QuestionGet"
+        ],
+        "summary": "指定學期，取得完整的課次資料",
+        "description": "取得事前在後台建置完成的指定學期的課次資料，得到章節名稱等相關資訊（不包含題目）",
+        "parameters": [
+          {
+            "name": "semester",
+            "in": "query",
+            "description": "學期代碼",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           },
-          "put": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Update an existing pet",
-              "description": "",
-              "operationId": "updatePet",
-              "consumes": [
-                  "application/json",
-                  "application/xml"
-              ],
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "Pet object that needs to be added to the store",
-                      "required": true,
-                      "schema": {
-                          "$ref": "#/definitions/Pet"
-                      }
-                  }
-              ],
-              "responses": {
-                  "400": {
-                      "description": "Invalid ID supplied"
-                  },
-                  "404": {
-                      "description": "Pet not found"
-                  },
-                  "405": {
-                      "description": "Validation exception"
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ]
+          {
+            "name": "schoolLevel",
+            "in": "query",
+            "description": "學級 (E: 國小, J: 國中, H: 高中)",
+            "schema": {
+              "type": "string"
+            }
           }
-      },
-      "/pet/findByStatus": {
-          "get": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Finds Pets by status",
-              "description": "Multiple status values can be provided with comma separated strings",
-              "operationId": "findPetsByStatus",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "status",
-                      "in": "query",
-                      "description": "Status values that need to be considered for filter",
-                      "required": true,
-                      "type": "array",
-                      "items": {
-                          "type": "string",
-                          "enum": [
-                              "available",
-                              "pending",
-                              "sold"
-                          ],
-                          "default": "available"
-                      },
-                      "collectionFormat": "multi"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "type": "array",
-                          "items": {
-                              "$ref": "#/definitions/Pet"
-                          }
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid status value"
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ]
-          }
-      },
-      "/pet/findByTags": {
-          "get": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Finds Pets by tags",
-              "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-              "operationId": "findPetsByTags",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "tags",
-                      "in": "query",
-                      "description": "Tags to filter by",
-                      "required": true,
-                      "type": "array",
-                      "items": {
-                          "type": "string"
-                      },
-                      "collectionFormat": "multi"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "type": "array",
-                          "items": {
-                              "$ref": "#/definitions/Pet"
-                          }
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid tag value"
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ],
-              "deprecated": true
-          }
-      },
-      "/pet/{petId}": {
-          "get": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Find pet by ID",
-              "description": "Returns a single pet",
-              "operationId": "getPetById",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "petId",
-                      "in": "path",
-                      "description": "ID of pet to return",
-                      "required": true,
-                      "type": "integer",
-                      "format": "int64"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "$ref": "#/definitions/Pet"
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid ID supplied"
-                  },
-                  "404": {
-                      "description": "Pet not found"
-                  }
-              },
-              "security": [
-                  {
-                      "api_key": []
-                  }
-              ]
-          },
-          "post": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Updates a pet in the store with form data",
-              "description": "",
-              "operationId": "updatePetWithForm",
-              "consumes": [
-                  "application/x-www-form-urlencoded"
-              ],
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "petId",
-                      "in": "path",
-                      "description": "ID of pet that needs to be updated",
-                      "required": true,
-                      "type": "integer",
-                      "format": "int64"
-                  },
-                  {
-                      "name": "name",
-                      "in": "formData",
-                      "description": "Updated name of the pet",
-                      "required": false,
-                      "type": "string"
-                  },
-                  {
-                      "name": "status",
-                      "in": "formData",
-                      "description": "Updated status of the pet",
-                      "required": false,
-                      "type": "string"
-                  }
-              ],
-              "responses": {
-                  "405": {
-                      "description": "Invalid input"
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ]
-          },
-          "delete": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "Deletes a pet",
-              "description": "",
-              "operationId": "deletePet",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "api_key",
-                      "in": "header",
-                      "required": false,
-                      "type": "string"
-                  },
-                  {
-                      "name": "petId",
-                      "in": "path",
-                      "description": "Pet id to delete",
-                      "required": true,
-                      "type": "integer",
-                      "format": "int64"
-                  }
-              ],
-              "responses": {
-                  "400": {
-                      "description": "Invalid ID supplied"
-                  },
-                  "404": {
-                      "description": "Pet not found"
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ]
-          }
-      },
-      "/pet/{petId}/uploadImage": {
-          "post": {
-              "tags": [
-                  "pet"
-              ],
-              "summary": "uploads an image",
-              "description": "",
-              "operationId": "uploadFile",
-              "consumes": [
-                  "multipart/form-data"
-              ],
-              "produces": [
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "petId",
-                      "in": "path",
-                      "description": "ID of pet to update",
-                      "required": true,
-                      "type": "integer",
-                      "format": "int64"
-                  },
-                  {
-                      "name": "additionalMetadata",
-                      "in": "formData",
-                      "description": "Additional data to pass to server",
-                      "required": false,
-                      "type": "string"
-                  },
-                  {
-                      "name": "file",
-                      "in": "formData",
-                      "description": "file to upload",
-                      "required": false,
-                      "type": "file"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "$ref": "#/definitions/ApiResponse"
-                      }
-                  }
-              },
-              "security": [
-                  {
-                      "petstore_auth": [
-                          "write:pets",
-                          "read:pets"
-                      ]
-                  }
-              ]
-          }
-      },
-      "/store/inventory": {
-          "get": {
-              "tags": [
-                  "store"
-              ],
-              "summary": "Returns pet inventories by status",
-              "description": "Returns a map of status codes to quantities",
-              "operationId": "getInventory",
-              "produces": [
-                  "application/json"
-              ],
-              "parameters": [],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "type": "object",
-                          "additionalProperties": {
-                              "type": "integer",
-                              "format": "int32"
-                          }
-                      }
-                  }
-              },
-              "security": [
-                  {
-                      "api_key": []
-                  }
-              ]
-          }
-      },
-      "/store/order": {
-          "post": {
-              "tags": [
-                  "store"
-              ],
-              "summary": "Place an order for a pet",
-              "description": "",
-              "operationId": "placeOrder",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "order placed for purchasing the pet",
-                      "required": true,
-                      "schema": {
-                          "$ref": "#/definitions/Order"
-                      }
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "$ref": "#/definitions/Order"
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid Order"
-                  }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseTreeVModelListJsonDataResponse"
+                }
               }
+            }
           }
-      },
-      "/store/order/{orderId}": {
-          "get": {
-              "tags": [
-                  "store"
-              ],
-              "summary": "Find purchase order by ID",
-              "description": "For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
-              "operationId": "getOrderById",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "orderId",
-                      "in": "path",
-                      "description": "ID of pet that needs to be fetched",
-                      "required": true,
-                      "type": "integer",
-                      "maximum": 10,
-                      "minimum": 1,
-                      "format": "int64"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "$ref": "#/definitions/Order"
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid ID supplied"
-                  },
-                  "404": {
-                      "description": "Order not found"
-                  }
-              }
-          },
-          "delete": {
-              "tags": [
-                  "store"
-              ],
-              "summary": "Delete purchase order by ID",
-              "description": "For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors",
-              "operationId": "deleteOrder",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "orderId",
-                      "in": "path",
-                      "description": "ID of the order that needs to be deleted",
-                      "required": true,
-                      "type": "integer",
-                      "minimum": 1,
-                      "format": "int64"
-                  }
-              ],
-              "responses": {
-                  "400": {
-                      "description": "Invalid ID supplied"
-                  },
-                  "404": {
-                      "description": "Order not found"
-                  }
-              }
-          }
-      },
-      "/user": {
-          "post": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Create user",
-              "description": "This can only be done by the logged in user.",
-              "operationId": "createUser",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "Created user object",
-                      "required": true,
-                      "schema": {
-                          "$ref": "#/definitions/User"
-                      }
-                  }
-              ],
-              "responses": {
-                  "default": {
-                      "description": "successful operation"
-                  }
-              }
-          }
-      },
-      "/user/createWithArray": {
-          "post": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Creates list of users with given input array",
-              "description": "",
-              "operationId": "createUsersWithArrayInput",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "List of user object",
-                      "required": true,
-                      "schema": {
-                          "type": "array",
-                          "items": {
-                              "$ref": "#/definitions/User"
-                          }
-                      }
-                  }
-              ],
-              "responses": {
-                  "default": {
-                      "description": "successful operation"
-                  }
-              }
-          }
-      },
-      "/user/createWithList": {
-          "post": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Creates list of users with given input array",
-              "description": "",
-              "operationId": "createUsersWithListInput",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "List of user object",
-                      "required": true,
-                      "schema": {
-                          "type": "array",
-                          "items": {
-                              "$ref": "#/definitions/User"
-                          }
-                      }
-                  }
-              ],
-              "responses": {
-                  "default": {
-                      "description": "successful operation"
-                  }
-              }
-          }
-      },
-      "/user/login": {
-          "get": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Logs user into the system",
-              "description": "",
-              "operationId": "loginUser",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "username",
-                      "in": "query",
-                      "description": "The user name for login",
-                      "required": true,
-                      "type": "string"
-                  },
-                  {
-                      "name": "password",
-                      "in": "query",
-                      "description": "The password for login in clear text",
-                      "required": true,
-                      "type": "string"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "type": "string"
-                      },
-                      "headers": {
-                          "X-Rate-Limit": {
-                              "type": "integer",
-                              "format": "int32",
-                              "description": "calls per hour allowed by the user"
-                          },
-                          "X-Expires-After": {
-                              "type": "string",
-                              "format": "date-time",
-                              "description": "date in UTC when token expires"
-                          }
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid username/password supplied"
-                  }
-              }
-          }
-      },
-      "/user/logout": {
-          "get": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Logs out current logged in user session",
-              "description": "",
-              "operationId": "logoutUser",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [],
-              "responses": {
-                  "default": {
-                      "description": "successful operation"
-                  }
-              }
-          }
-      },
-      "/user/{username}": {
-          "get": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Get user by user name",
-              "description": "",
-              "operationId": "getUserByName",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "username",
-                      "in": "path",
-                      "description": "The name that needs to be fetched. Use user1 for testing. ",
-                      "required": true,
-                      "type": "string"
-                  }
-              ],
-              "responses": {
-                  "200": {
-                      "description": "successful operation",
-                      "schema": {
-                          "$ref": "#/definitions/User"
-                      }
-                  },
-                  "400": {
-                      "description": "Invalid username supplied"
-                  },
-                  "404": {
-                      "description": "User not found"
-                  }
-              }
-          },
-          "put": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Updated user",
-              "description": "This can only be done by the logged in user.",
-              "operationId": "updateUser",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "username",
-                      "in": "path",
-                      "description": "name that need to be updated",
-                      "required": true,
-                      "type": "string"
-                  },
-                  {
-                      "in": "body",
-                      "name": "body",
-                      "description": "Updated user object",
-                      "required": true,
-                      "schema": {
-                          "$ref": "#/definitions/User"
-                      }
-                  }
-              ],
-              "responses": {
-                  "400": {
-                      "description": "Invalid user supplied"
-                  },
-                  "404": {
-                      "description": "User not found"
-                  }
-              }
-          },
-          "delete": {
-              "tags": [
-                  "user"
-              ],
-              "summary": "Delete user",
-              "description": "This can only be done by the logged in user.",
-              "operationId": "deleteUser",
-              "produces": [
-                  "application/xml",
-                  "application/json"
-              ],
-              "parameters": [
-                  {
-                      "name": "username",
-                      "in": "path",
-                      "description": "The name that needs to be deleted",
-                      "required": true,
-                      "type": "string"
-                  }
-              ],
-              "responses": {
-                  "400": {
-                      "description": "Invalid username supplied"
-                  },
-                  "404": {
-                      "description": "User not found"
-                  }
-              }
-          }
+        }
       }
-  },
-  "securityDefinitions": {
-      "petstore_auth": {
-          "type": "oauth2",
-          "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",
-          "flow": "implicit",
-          "scopes": {
-              "write:pets": "modify pets in your account",
-              "read:pets": "read your pets"
+    },
+    "/api/QuestionGet/QuestionList": {
+      "get": {
+        "tags": [
+          "QuestionGet"
+        ],
+        "summary": "指定課次範圍代碼，取得對應題目資訊",
+        "description": "取得指定課次代碼下，關連到的題目資訊。\r\n\r\n只關聯到完整對應的項目，換言之，不回應到子節點下的題目。",
+        "parameters": [
+          {
+            "name": "courseScopeId",
+            "in": "query",
+            "description": "課次代碼",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-      },
-      "api_key": {
-          "type": "apiKey",
-          "name": "api_key",
-          "in": "header"
-      },
-      "api_key2": {
-          "type": "apiKey",
-          "name": "api_key2",
-          "in": "header"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionListVModelListJsonDataResponse"
+                }
+              }
+            }
+          }
+        }
       }
-  },
-  "definitions": {
-      "Order": {
-          "type": "object",
-          "properties": {
-              "id": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "petId": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "quantity": {
-                  "type": "integer",
-                  "format": "int32"
-              },
-              "shipDate": {
-                  "type": "string",
-                  "format": "date-time"
-              },
-              "status": {
-                  "type": "string",
-                  "description": "Order Status",
-                  "enum": [
-                      "placed",
-                      "approved",
-                      "delivered"
-                  ]
-              },
-              "complete": {
-                  "type": "boolean",
-                  "default": false
-              }
-          },
-          "xml": {
-              "name": "Order"
+    },
+    "/api/QuestionGet/Question": {
+      "get": {
+        "tags": [
+          "QuestionGet"
+        ],
+        "summary": "指定題目 ID ，取得關聯的題目資料(metadata ，不含檔案)",
+        "description": "取得指定題目 ID ，關連到的題目資訊。 主要為了錯題回報之後，重新取得最新版本題目內容使用。\r\n\r\n為了錯題回報後，若決定「下架」處理，仍有管道可以得知其狀態。因此在回傳值增加一個 Offline 屬性。",
+        "parameters": [
+          {
+            "name": "QuestionId",
+            "in": "query",
+            "description": "題目 ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-      },
-      "User": {
-          "type": "object",
-          "properties": {
-              "id": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "username": {
-                  "type": "string"
-              },
-              "firstName": {
-                  "type": "string"
-              },
-              "lastName": {
-                  "type": "string"
-              },
-              "email": {
-                  "type": "string"
-              },
-              "password": {
-                  "type": "string"
-              },
-              "phone": {
-                  "type": "string"
-              },
-              "userStatus": {
-                  "type": "integer",
-                  "format": "int32",
-                  "description": "User Status"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionVModelJsonDataResponse"
+                }
               }
-          },
-          "xml": {
-              "name": "User"
+            }
           }
-      },
-      "Category": {
-          "type": "object",
-          "properties": {
-              "id": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "name": {
-                  "type": "string"
-              }
-          },
-          "xml": {
-              "name": "Category"
-          }
-      },
-      "Tag": {
-          "type": "object",
-          "properties": {
-              "id": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "name": {
-                  "type": "string"
-              }
-          },
-          "xml": {
-              "name": "Tag"
-          }
-      },
-      "Pet": {
-          "type": "object",
-          "required": [
-              "id",
-              "name",
-              "photoUrls"
-          ],
-          "properties": {
-              "id": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "category": {
-                  "$ref": "#/definitions/Category"
-              },
-              "name": {
-                  "type": "string",
-                  "example": "doggie"
-              },
-              "photoUrls": {
-                  "type": "array",
-                  "xml": {
-                      "name": "photoUrl",
-                      "wrapped": true
-                  },
-                  "items": {
-                      "type": "string"
-                  }
-              },
-              "tags": {
-                  "type": "array",
-                  "xml": {
-                      "name": "tag",
-                      "wrapped": true
-                  },
-                  "items": {
-                      "$ref": "#/definitions/Tag"
-                  }
-              },
-              "status": {
-                  "type": "string",
-                  "description": "pet status in the store",
-                  "enum": [
-                      "available",
-                      "pending",
-                      "sold"
-                  ]
-              }
-          },
-          "xml": {
-              "name": "Pet"
-          }
-      },
-      "ApiResponse": {
-          "type": "object",
-          "properties": {
-              "code": {
-                  "type": "integer",
-                  "format": "int32"
-              },
-              "type": {
-                  "type": "string"
-              },
-              "message": {
-                  "type": "string"
-              }
-          }
+        }
       }
+    },
+    "/api/QuestionGet/QuestionFile": {
+      "get": {
+        "tags": [
+          "QuestionGet"
+        ],
+        "summary": "指定題目 ID ，取得該題目壓縮檔",
+        "description": "透過題目 ID ，取得題目相關的檔案。必須包含 HTML 以及 Word 檔案。而視題型需要，也要納入聲音檔案。",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "description": "題目 ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Base64DataJsonDataResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/QuestionGet/QuestionIssue": {
+      "post": {
+        "tags": [
+          "QuestionGet"
+        ],
+        "summary": "指定題目 ID ，回報題目的問題",
+        "description": "回傳使用現場遇到的問題",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionIssueVModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionIssueVModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionIssueVModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionIssueVModelJsonDataResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
-  "externalDocs": {
-      "description": "Find out more about Swagger",
-      "url": "http://swagger.io"
-  }
+  "components": {
+    "schemas": {
+      "Base64Data": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "description": "檔案名稱",
+            "nullable": true
+          },
+          "base64": {
+            "type": "string",
+            "description": "Base64 字串",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Base64 回傳格式"
+      },
+      "Base64DataJsonDataResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/Base64Data"
+          }
+        },
+        "additionalProperties": false,
+        "description": "回應制式格式"
+      },
+      "CourseTreeVModel": {
+        "type": "object",
+        "properties": {
+          "courseScopeId": {
+            "type": "string",
+            "description": "課次範圍ID",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "範圍名稱",
+            "nullable": true
+          },
+          "examRelation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "段考範圍",
+            "nullable": true
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseTreeVModel"
+            },
+            "description": "下一層子節點",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "課次樹狀結構"
+      },
+      "CourseTreeVModelListJsonDataResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseTreeVModel"
+            },
+            "description": "回傳資料",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "回應制式格式"
+      },
+      "QuestionIssueVModel": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "description": "題目 ID",
+            "nullable": true
+          },
+          "issueType": {
+            "type": "string",
+            "description": "問題類型",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "問題詳細描述",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionIssueVModelJsonDataResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/QuestionIssueVModel"
+          }
+        },
+        "additionalProperties": false,
+        "description": "回應制式格式"
+      },
+      "QuestionListVModel": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "description": "題目ID",
+            "nullable": true
+          },
+          "questionUUID": {
+            "type": "string",
+            "description": "題目UUID",
+            "nullable": true
+          },
+          "questionVersion": {
+            "type": "integer",
+            "description": "題目版次",
+            "format": "int32"
+          },
+          "knowledgePoint": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "知識點",
+            "nullable": true
+          },
+          "questionType": {
+            "type": "string",
+            "description": "題型",
+            "nullable": true
+          },
+          "answerCount": {
+            "type": "integer",
+            "description": "答案數",
+            "format": "int32",
+            "nullable": true
+          },
+          "capability": {
+            "type": "string",
+            "description": "能力指標",
+            "nullable": true
+          },
+          "difficultLevel": {
+            "type": "string",
+            "description": "難易度",
+            "nullable": true
+          },
+          "source": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "試題出處",
+            "nullable": true
+          },
+          "video": {
+            "type": "string",
+            "description": "影片路徑",
+            "nullable": true
+          },
+          "audio": {
+            "type": "string",
+            "description": "音檔路徑",
+            "nullable": true
+          },
+          "pagenumber": {
+            "type": "string",
+            "description": "日躍編號",
+            "nullable": true
+          },
+          "questionsequence": {
+            "type": "string",
+            "description": "主題",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "題目明細"
+      },
+      "QuestionListVModelListJsonDataResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionListVModel"
+            },
+            "description": "回傳資料",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "回應制式格式"
+      },
+      "QuestionVModel": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "description": "題目ID",
+            "nullable": true
+          },
+          "questionUUID": {
+            "type": "string",
+            "description": "題目UUID",
+            "nullable": true
+          },
+          "questionVersion": {
+            "type": "integer",
+            "description": "題目版次",
+            "format": "int32"
+          },
+          "knowledgePoint": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "知識點",
+            "nullable": true
+          },
+          "questionType": {
+            "type": "string",
+            "description": "題型",
+            "nullable": true
+          },
+          "answerCount": {
+            "type": "integer",
+            "description": "答案數",
+            "format": "int32",
+            "nullable": true
+          },
+          "capability": {
+            "type": "string",
+            "description": "能力指標",
+            "nullable": true
+          },
+          "difficultLevel": {
+            "type": "string",
+            "description": "難易度",
+            "nullable": true
+          },
+          "source": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "試題出處",
+            "nullable": true
+          },
+          "video": {
+            "type": "string",
+            "description": "影片路徑",
+            "nullable": true
+          },
+          "audio": {
+            "type": "string",
+            "description": "音檔路徑",
+            "nullable": true
+          },
+          "offline": {
+            "type": "boolean",
+            "description": "是否下架"
+          },
+          "pagenumber": {
+            "type": "string",
+            "description": "日躍編號",
+            "nullable": true
+          },
+          "questionsequence": {
+            "type": "string",
+            "description": "主題",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "題目明細"
+      },
+      "QuestionVModelJsonDataResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "回傳代碼",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/QuestionVModel"
+          }
+        },
+        "additionalProperties": false,
+        "description": "回應制式格式"
+      }
+    },
+    "securitySchemes": {
+      "ApiSecretKey": {
+        "type": "apiKey",
+        "description": "請在這裡輸入你的 API 金鑰",
+        "name": "ApiSecretKey",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiSecretKey": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "QuestionGet",
+      "description": "題目取得"
+    }
+  ]
 }

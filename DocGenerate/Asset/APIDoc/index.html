@@ -1,5 +1,6 @@
 ﻿<!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <style>
@@ -28,15 +29,18 @@
     </style>
     <script type="text/javascript" src="./rapipdf-min.js"></script>
 </head>
+
 <body>
     <rapi-pdf id="thedoc">
     </rapi-pdf>
     <div class="container">
         <button id="btn" class="btn-default" type="button">選取Swagger.json檔案 產生文件</button>
+        <button id="downloadSample" class="btn-default" type="button" style="margin-left: 16px;">下載範例檔案</button>
     </div>
     <script>
         const btnEl = document.getElementById("btn");
         const docEl = document.getElementById("thedoc");
+        const downloadSampleEl = document.getElementById("downloadSample");
         const localizeObj = {
             index: '目錄索引',
             api: 'API',
@@ -74,18 +78,24 @@
             ...docEl.localize,
             ...localizeObj
         };
+
+        // 下載範例檔案功能
+        downloadSampleEl.addEventListener('click', () => {
+            const host = window.chrome.webview.hostObjects.webViewClass;
+            host.DownloadExampleFile();
+        });
         async function chooseFile() {
-            var host = window.chrome.webview.hostObjects.webViewClass;
+            const host = window.chrome.webview.hostObjects.webViewClass;
             return await host.ChooseFile("", "JSON Files (*.json)|*.json", "瀏覽JSON檔案");
         }
         async function readFile(filePath) {
-            var host = window.chrome.webview.hostObjects.webViewClass;
+            const host = window.chrome.webview.hostObjects.webViewClass;
             return await host.ReadFile(filePath);
         }
         btnEl.addEventListener('click', async (ev) => {
-            var filePath = await chooseFile();
+            const filePath = await chooseFile();
             if (!!filePath) {
-                var result = await readFile(filePath);
+                const result = await readFile(filePath);
                 const objSpec = JSON.parse(result);
                 docEl.generatePdf(objSpec);
             }
@@ -93,4 +103,5 @@
 
     </script>
 </body>
+
 </html>

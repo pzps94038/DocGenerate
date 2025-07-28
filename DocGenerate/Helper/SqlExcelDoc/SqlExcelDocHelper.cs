@@ -148,10 +148,20 @@ namespace DocGenerate.Helper.SqlExcelDoc
                 var name = ShortenTableName(keyPair.Key);
                 var sheet = workbook.CreateSheet(name);
                 var titleRow = sheet.CreateRow(0);
+                var hyperlinkStyle = new CellStyle();
+                hyperlinkStyle.FontColor = IndexedColors.Blue.Index;
+                hyperlinkStyle.Underline = FontUnderlineType.Single;
+                var backIndexCell = titleRow.CreateStyleCell(0, hyperlinkStyle);
+                backIndexCell.SetCellValue("回首頁");
+                var hyperlink = new XSSFHyperlink(HyperlinkType.Document)
+                {
+                    Address = $"'表格清單目錄'!A1"
+                };
+                backIndexCell.Hyperlink = hyperlink;
                 var titleCellStyle = new CellStyle();
                 titleCellStyle.IsBold = true;
-                titleRow.CreateStyleCell(0, titleCellStyle).SetCellValue("表格名稱");
-                titleRow.CreateStyleCell(1, titleCellStyle).SetCellValue(keyPair.Key);
+                titleRow.CreateStyleCell(1, titleCellStyle).SetCellValue("表格名稱");
+                titleRow.CreateStyleCell(2, titleCellStyle).SetCellValue(keyPair.Key);
                 var headerRow = sheet.CreateRow(1);
                 var headerCellIdx = 0;
                 headerRow.CreateStyleCell(headerCellIdx, headerStyle).SetCellValue("項次");

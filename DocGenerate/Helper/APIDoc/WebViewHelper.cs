@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
 
 namespace DocGenerate.Helper.APIDoc
 {
     public class WebViewHelper : IWebViewHelper
     {
         private readonly ISharedHelper _sharedHelper;
+
         public WebViewHelper(ISharedHelper sharedHelper)
         {
             _sharedHelper = sharedHelper;
@@ -53,6 +56,37 @@ namespace DocGenerate.Helper.APIDoc
         public string ReadFile(string filePath)
         {
             return File.ReadAllText(filePath, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 下載範例檔案
+        /// </summary>
+        /// <returns></returns>
+        public void DownloadExampleFile()
+        {
+            string basePath = AppContext.BaseDirectory;
+            string relativePath = "Asset\\APIDoc";
+            var fileName = "example.json";
+            var fullPath = Path.Combine(basePath, relativePath, fileName);
+
+            using (var dialog = new SaveFileDialog())
+            {
+                dialog.FileName = fileName;
+                dialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                dialog.Title = "下載範例檔案";
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        File.Copy(fullPath, dialog.FileName, true);
+                        _sharedHelper.ShowInfoMsg("下載完成", $"範例檔案已儲存至：{dialog.FileName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _sharedHelper.ShowExceptionMessageBox(ex, "下載失敗");
+                    }
+                }
+            }
         }
     }
 }
