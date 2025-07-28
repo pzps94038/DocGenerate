@@ -106,9 +106,9 @@ namespace DocGenerate.Model.SqlExcelDoc
 						WHERE
 							t.TABLE_TYPE = 'BASE TABLE'
 						GROUP BY
-							t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.IS_NULLABLE, c.CHARACTER_MAXIMUM_LENGTH, ep.value
+							t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.IS_NULLABLE, c.CHARACTER_MAXIMUM_LENGTH, ep.value, c.ORDINAL_POSITION
 						ORDER BY
-							TableName, IsPrimaryKey DESC, IsForeignKey DESC, ColumnName
+							TableName, IsPrimaryKey DESC, c.ORDINAL_POSITION
 			";
             var result = _connection.Query<TableSpecifications>(sql);
             return result;
