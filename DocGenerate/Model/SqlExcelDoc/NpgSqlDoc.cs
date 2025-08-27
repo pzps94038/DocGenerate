@@ -137,9 +137,9 @@ namespace DocGenerate.Model.SqlExcelDoc
                         WHERE t.table_schema NOT IN ('pg_catalog', 'information_schema') and t.table_type = 'BASE TABLE'
                         GROUP BY
                             t.table_schema, t.table_name, c.column_name, c.data_type, c.is_nullable, c.character_maximum_length,
-                            c.numeric_precision, c.numeric_scale, ep.description
+                            c.numeric_precision, c.numeric_scale, ep.description, c.ordinal_position
                         ORDER BY
-                            ""TableName"", ""IsPrimaryKey"" DESC, ""IsForeignKey"" DESC, ""ColumnName"";
+                            ""TableName"", ""IsPrimaryKey"" DESC, c.ordinal_position;
             ";
             var result = _connection.Query<TableSpecifications>(sql);
             return result;

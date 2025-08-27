@@ -1,107 +1,352 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API 文件產生器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            animation: {
+              fadeIn: "fadeIn 0.3s ease-in-out",
+            },
+            fontFamily: {
+              ui: ["Segoe UI", "Tahoma", "Geneva", "Verdana", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
     <style>
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 180px;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        rapi-pdf {
-            display: none;
-        }
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #0c0c0c 0%,
+          #1a1a1a 25%,
+          #2d1b69 75%,
+          #11998e 100%
+        );
+      }
 
-        .btn-default {
-            font-size: 16px;
-            padding: 24px;
-            text-align: center;
-            white-space: nowrap;
-            background-color: #3b6fdd;
-            color: white;
-            border: 0px solid #333;
-            cursor: pointer;
-            font-weight: 600;
-        }
+      .gradient-red {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      }
+
+      .gradient-blue {
+        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+      }
+
+      .gradient-orange {
+        background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      }
+
+      .backdrop-blur-custom {
+        backdrop-filter: blur(15px);
+      }
+
+      .content-section {
+        display: none;
+      }
+
+      .content-section.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+      }
     </style>
     <script type="text/javascript" src="./rapipdf-min.js"></script>
-</head>
+  </head>
 
-<body>
-    <rapi-pdf id="thedoc">
-    </rapi-pdf>
-    <div class="container">
-        <button id="btn" class="btn-default" type="button">選取Swagger.json檔案 產生文件</button>
-        <button id="downloadSample" class="btn-default" type="button" style="margin-left: 16px;">下載範例檔案</button>
-    </div>
+  <body class="gradient-bg min-h-screen flex flex-col text-gray-200 font-ui">
+    <!-- Header -->
+    <header
+      class="bg-black bg-opacity-60 backdrop-blur-custom py-6 text-center shadow-2xl border-b border-white border-opacity-10"
+    >
+      <h1
+        class="text-white text-5xl md:text-6xl font-black tracking-wide mb-3 drop-shadow-lg"
+      >
+        ⚡ API 文件產生器
+      </h1>
+      <p class="text-white text-opacity-85 text-xl font-light">
+        強力轉換您的 Swagger.json 為專業級 PDF 文件
+      </p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 flex justify-center items-center p-10">
+      <div
+        class="bg-gray-900 bg-opacity-95 backdrop-blur-custom rounded-3xl shadow-2xl p-12 max-w-2xl w-full text-center border border-white border-opacity-10"
+      >
+        <h2 class="text-white text-3xl font-bold mb-8 drop-shadow-md">
+          選擇您的戰術
+        </h2>
+
+        <!-- Method Selector -->
+        <div
+          class="flex bg-black bg-opacity-40 rounded-2xl p-2 mb-8 shadow-inner border border-white border-opacity-10"
+        >
+          <button
+            class="method-option flex-1 py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 gradient-red text-white shadow-lg -translate-y-0.5"
+            data-method="file"
+          >
+            📁 選擇檔案
+          </button>
+          <button
+            class="method-option flex-1 py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 text-gray-400"
+            data-method="paste"
+          >
+            ⚡ 貼上內容
+          </button>
+        </div>
+
+        <!-- File Section -->
+        <div class="content-section active" id="file-section">
+          <div class="flex gap-4 justify-center flex-wrap">
+            <button
+              id="btn"
+              class="gradient-red text-white py-5 px-8 rounded-2xl font-bold text-lg uppercase tracking-wide border border-white border-opacity-20 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex items-center gap-3"
+            >
+              <svg
+                class="w-6 h-6 drop-shadow-sm"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+                />
+              </svg>
+              啟動文件生成
+            </button>
+          </div>
+        </div>
+
+        <!-- Paste Section -->
+        <div class="content-section" id="paste-section">
+          <div class="mb-5">
+            <label
+              for="swaggerTextArea"
+              class="block mb-3 font-bold text-white text-left text-lg uppercase tracking-wide"
+            >
+              貼上您的 Swagger.json 內容：
+            </label>
+            <textarea
+              id="swaggerTextArea"
+              class="w-full min-h-56 p-5 border-2 border-white border-opacity-20 rounded-2xl font-mono text-sm resize-y transition-all duration-300 bg-black bg-opacity-40 text-white backdrop-blur-sm focus:outline-none focus:border-red-400 focus:shadow-lg focus:shadow-red-400 focus:shadow-opacity-20 focus:bg-black focus:bg-opacity-60 placeholder-white placeholder-opacity-50"
+              placeholder='請在此貼上完整的 Swagger.json 內容...&#10;&#10;例如：&#10;{&#10;  "openapi": "3.0.0",&#10;  "info": {&#10;    "title": "Sample API",&#10;    "version": "1.0.0"&#10;  },&#10;  ...&#10;}'
+            ></textarea>
+          </div>
+          <div class="flex gap-4 justify-center flex-wrap">
+            <button
+              id="pasteBtn"
+              class="gradient-red text-white py-5 px-8 rounded-2xl font-bold text-lg uppercase tracking-wide border border-white border-opacity-20 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex items-center gap-3"
+            >
+              <svg
+                class="w-6 h-6 drop-shadow-sm"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
+                />
+              </svg>
+              執行文件轉換
+            </button>
+            <button
+              id="clearBtn"
+              class="gradient-blue text-white py-5 px-8 rounded-2xl font-bold text-lg uppercase tracking-wide border border-white border-opacity-20 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex items-center gap-3"
+            >
+              <svg
+                class="w-6 h-6 drop-shadow-sm"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
+                />
+              </svg>
+              重置戰場
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sample Download Button -->
+    <button
+      id="downloadSample"
+      class="fixed bottom-6 right-6 gradient-orange text-black py-4 px-6 rounded-full font-bold uppercase tracking-wide border border-white border-opacity-20 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+    >
+      🎯 下載範例檔案
+    </button>
+
+    <!-- Hidden PDF Generator -->
+    <rapi-pdf id="thedoc" class="hidden"></rapi-pdf>
+
     <script>
-        const btnEl = document.getElementById("btn");
-        const docEl = document.getElementById("thedoc");
-        const downloadSampleEl = document.getElementById("downloadSample");
-        const localizeObj = {
-            index: '目錄索引',
-            api: 'API',
-            apiList: 'API List',
-            apiReference: 'API Reference',
-            apiVersion: 'API Version',
-            contact: 'CONTACT',
-            name: '欄位名稱',
-            email: 'EMAIL',
-            url: 'URL',
-            termsOfService: 'Terms of service',
-            securityAndAuthentication: 'HTTP Header: Authentication',
-            securitySchemes: 'SECURITY SCHEMES',
-            key: '認證方式',
-            type: '型別',
-            example: 'EXAMPLE',
-            description: '說明',
-            request: 'REQUEST',
-            requestBody: 'REQUEST BODY',
-            response: 'RESPONSE',
-            responseModel: 'RESPONSE MODEL',
-            statusCode: 'STATUS CODE',
-            deprecated: 'DEPRECATED',
-            allowed: 'ALLOWED',
-            default: '預設值',
-            readOnly: 'READ ONLY',
-            writeOnly: 'WRITE ONLY',
-            enumValues: 'ENUM',
-            pattern: 'PATTERN',
-            parameters: 'Parameters',
-            noRequestParameters: 'No request parameters',
-            method: 'METHOD'
-        }
-        docEl.localize = {
-            ...docEl.localize,
-            ...localizeObj
-        };
+      const btnEl = document.getElementById("btn");
+      const docEl = document.getElementById("thedoc");
+      const downloadSampleEl = document.getElementById("downloadSample");
+      const pasteBtnEl = document.getElementById("pasteBtn");
+      const clearBtnEl = document.getElementById("clearBtn");
+      const swaggerTextArea = document.getElementById("swaggerTextArea");
+      const methodOptions = document.querySelectorAll(".method-option");
+      const contentSections = document.querySelectorAll(".content-section");
 
-        // 下載範例檔案功能
-        downloadSampleEl.addEventListener('click', () => {
-            const host = window.chrome.webview.hostObjects.webViewClass;
-            host.DownloadExampleFile();
+      const localizeObj = {
+        index: "目錄索引",
+        api: "API",
+        apiList: "API List",
+        apiReference: "API Reference",
+        apiVersion: "API Version",
+        contact: "CONTACT",
+        name: "欄位名稱",
+        email: "EMAIL",
+        url: "URL",
+        termsOfService: "Terms of service",
+        securityAndAuthentication: "HTTP Header: Authentication",
+        securitySchemes: "SECURITY SCHEMES",
+        key: "認證方式",
+        type: "型別",
+        example: "EXAMPLE",
+        description: "說明",
+        request: "REQUEST",
+        requestBody: "REQUEST BODY",
+        response: "RESPONSE",
+        responseModel: "RESPONSE MODEL",
+        statusCode: "STATUS CODE",
+        deprecated: "DEPRECATED",
+        allowed: "ALLOWED",
+        default: "預設值",
+        readOnly: "READ ONLY",
+        writeOnly: "WRITE ONLY",
+        enumValues: "ENUM",
+        pattern: "PATTERN",
+        parameters: "Parameters",
+        noRequestParameters: "No request parameters",
+        method: "METHOD",
+      };
+
+      docEl.localize = {
+        ...docEl.localize,
+        ...localizeObj,
+      };
+
+      // 方法選擇器功能
+      methodOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          // 移除所有 active 類別
+          methodOptions.forEach((opt) => {
+            opt.classList.remove(
+              "gradient-red",
+              "text-white",
+              "shadow-lg",
+              "-translate-y-0.5"
+            );
+            opt.classList.add("text-gray-400");
+          });
+          contentSections.forEach((section) =>
+            section.classList.remove("active")
+          );
+
+          // 添加 active 到選中的選項
+          option.classList.remove("text-gray-400");
+          option.classList.add(
+            "gradient-red",
+            "text-white",
+            "shadow-lg",
+            "-translate-y-0.5"
+          );
+
+          // 顯示對應的內容區域
+          const method = option.dataset.method;
+          const targetSection = document.getElementById(`${method}-section`);
+          if (targetSection) {
+            targetSection.classList.add("active");
+          }
         });
-        async function chooseFile() {
-            const host = window.chrome.webview.hostObjects.webViewClass;
-            return await host.ChooseFile("", "JSON Files (*.json)|*.json", "瀏覽JSON檔案");
-        }
-        async function readFile(filePath) {
-            const host = window.chrome.webview.hostObjects.webViewClass;
-            return await host.ReadFile(filePath);
-        }
-        btnEl.addEventListener('click', async (ev) => {
-            const filePath = await chooseFile();
-            if (!!filePath) {
-                const result = await readFile(filePath);
-                const objSpec = JSON.parse(result);
-                docEl.generatePdf(objSpec);
+      });
+
+      // 清除按鈕功能
+      clearBtnEl.addEventListener("click", () => {
+        swaggerTextArea.value = "";
+        swaggerTextArea.focus();
+      });
+
+      // 下載範例檔案功能
+      downloadSampleEl.addEventListener("click", () => {
+        const host = window.chrome.webview.hostObjects.webViewClass;
+        host.DownloadExampleFile();
+      });
+
+      async function chooseFile() {
+        const host = window.chrome.webview.hostObjects.webViewClass;
+        return await host.ChooseFile(
+          "",
+          "JSON Files (*.json)|*.json",
+          "瀏覽JSON檔案"
+        );
+      }
+
+      async function readFile(filePath) {
+        const host = window.chrome.webview.hostObjects.webViewClass;
+        return await host.ReadFile(filePath);
+      }
+
+      // 檔案選擇功能
+      btnEl.addEventListener("click", async (ev) => {
+        const filePath = await chooseFile();
+        if (!!filePath) {
+          try {
+            const result = await readFile(filePath);
+            const match = result.match(/\{[\s\S]*\}/);
+            if (!match) {
+              alert("JSON格式錯誤：找不到有效的JSON內容");
+              return;
             }
-        })
+            const jsonContent = match[0];
+            const objSpec = JSON.parse(jsonContent);
+            docEl.generatePdf(objSpec);
+          } catch (err) {
+            alert("處理檔案時發生錯誤：" + err);
+          }
+        }
+      });
 
+      // 貼上內容功能
+      pasteBtnEl.addEventListener("click", () => {
+        const text = swaggerTextArea.value.trim();
+        if (!text) {
+          alert("請貼上swagger.json內容");
+          return;
+        }
+
+        // 使用正規表達式提取JSON內容
+        const match = text.match(/\{[\s\S]*\}/);
+        if (!match) {
+          alert("JSON格式錯誤：找不到有效的JSON內容");
+          return;
+        }
+        const jsonContent = match[0];
+
+        try {
+          const objSpec = JSON.parse(jsonContent);
+          docEl.generatePdf(objSpec);
+        } catch (err) {
+          alert("JSON格式錯誤：" + err);
+        }
+      });
     </script>
-</body>
-
+  </body>
 </html>

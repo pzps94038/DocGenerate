@@ -1,11 +1,5 @@
 ﻿using DocGenerate.Interface.APIDoc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
 
 namespace DocGenerate.Helper.APIDoc
 {
@@ -64,8 +58,8 @@ namespace DocGenerate.Helper.APIDoc
         /// <returns></returns>
         public void DownloadExampleFile()
         {
-            string basePath = AppContext.BaseDirectory;
-            string relativePath = "Asset\\APIDoc";
+            var basePath = AppContext.BaseDirectory;
+            var relativePath = "Asset\\APIDoc";
             var fileName = "example.json";
             var fullPath = Path.Combine(basePath, relativePath, fileName);
 

@@ -36,19 +36,21 @@
             // 
             WebView.CreationProperties = null;
             WebView.DefaultBackgroundColor = Color.White;
-            WebView.Location = new Point(12, 12);
+            WebView.Location = new Point(15, 15);
+            WebView.Margin = new Padding(4);
             WebView.Name = "WebView";
-            WebView.Size = new Size(838, 203);
+            WebView.Size = new Size(1226, 1145);
             WebView.TabIndex = 0;
             WebView.ZoomFactor = 1D;
             // 
             // APIDocForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(9F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(862, 227);
+            ClientSize = new Size(1246, 1165);
             Controls.Add(WebView);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(4);
             Name = "APIDocForm";
             Text = "APIDocForm";
             Load += APIDocForm_Load;
